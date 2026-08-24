@@ -5,6 +5,7 @@ import {
     LayoutDashboard,
     Users,
     Package,
+    ScanLine,
     Settings,
     ChevronLeft,
     ChevronRight,
@@ -25,13 +26,15 @@ export default function Sidebar({
 
     return (
         <aside
-            className={`fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-gray-200 bg-white transition-all duration-300 ${isCollapsed ? "w-20" : "w-64"
-                }`}
+            className={`fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-gray-200 bg-white transition-all duration-300 ${
+                isCollapsed ? "w-20" : "w-64"
+            }`}
         >
             {/* Logo */}
             <div
-                className={`flex h-20 items-center border-b border-gray-200 ${isCollapsed ? "justify-center px-3" : "px-6"
-                    }`}
+                className={`flex h-20 items-center border-b border-gray-200 ${
+                    isCollapsed ? "justify-center px-3" : "px-6"
+                }`}
             >
                 {isCollapsed ? (
                     <h1 className="text-xl font-bold text-gray-900">
@@ -74,10 +77,11 @@ export default function Sidebar({
                         <Link
                             href="/"
                             title={isCollapsed ? "Dashboard" : undefined}
-                            className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${isCollapsed
+                            className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${
+                                isCollapsed
                                     ? "justify-center px-3"
                                     : "gap-3 px-4"
-                                }`}
+                            }`}
                         >
                             <LayoutDashboard size={19} />
 
@@ -90,10 +94,11 @@ export default function Sidebar({
                         {user?.roles?.[0] === "User" ? (
                             <div
                                 title="You do not have permission to access Users"
-                                className={`flex cursor-not-allowed items-center rounded-lg py-3 text-sm font-medium text-gray-400 ${isCollapsed
+                                className={`flex cursor-not-allowed items-center rounded-lg py-3 text-sm font-medium text-gray-400 ${
+                                    isCollapsed
                                         ? "justify-center px-3"
                                         : "gap-3 px-4"
-                                    }`}
+                                }`}
                             >
                                 <Users size={19} />
 
@@ -105,10 +110,11 @@ export default function Sidebar({
                             <Link
                                 href="/users"
                                 title={isCollapsed ? "Users" : undefined}
-                                className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${isCollapsed
+                                className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${
+                                    isCollapsed
                                         ? "justify-center px-3"
                                         : "gap-3 px-4"
-                                    }`}
+                                }`}
                             >
                                 <Users size={19} />
 
@@ -122,10 +128,11 @@ export default function Sidebar({
                         {user?.roles?.[0] === "User" ? (
                             <div
                                 title="You do not have permission to access Assets"
-                                className={`flex cursor-not-allowed items-center rounded-lg py-3 text-sm font-medium text-gray-400 ${isCollapsed
+                                className={`flex cursor-not-allowed items-center rounded-lg py-3 text-sm font-medium text-gray-400 ${
+                                    isCollapsed
                                         ? "justify-center px-3"
                                         : "gap-3 px-4"
-                                    }`}
+                                }`}
                             >
                                 <Package size={19} />
 
@@ -137,15 +144,50 @@ export default function Sidebar({
                             <Link
                                 href="/assets"
                                 title={isCollapsed ? "Assets" : undefined}
-                                className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${isCollapsed
+                                className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${
+                                    isCollapsed
                                         ? "justify-center px-3"
                                         : "gap-3 px-4"
-                                    }`}
+                                }`}
                             >
                                 <Package size={19} />
 
                                 {!isCollapsed && (
                                     <span>Assets</span>
+                                )}
+                            </Link>
+                        )}
+
+                        {/* Scans */}
+                        {user?.roles?.[0] === "User" ? (
+                            <div
+                                title="You do not have permission to access Scans"
+                                className={`flex cursor-not-allowed items-center rounded-lg py-3 text-sm font-medium text-gray-400 ${
+                                    isCollapsed
+                                        ? "justify-center px-3"
+                                        : "gap-3 px-4"
+                                }`}
+                            >
+                                <ScanLine size={19} />
+
+                                {!isCollapsed && (
+                                    <span>Scans</span>
+                                )}
+                            </div>
+                        ) : (
+                            <Link
+                                href="/scans"
+                                title={isCollapsed ? "Scans" : undefined}
+                                className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${
+                                    isCollapsed
+                                        ? "justify-center px-3"
+                                        : "gap-3 px-4"
+                                }`}
+                            >
+                                <ScanLine size={19} />
+
+                                {!isCollapsed && (
+                                    <span>Scans</span>
                                 )}
                             </Link>
                         )}
@@ -158,10 +200,11 @@ export default function Sidebar({
                     <Link
                         href="/settings"
                         title={isCollapsed ? "Settings" : undefined}
-                        className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${isCollapsed
+                        className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${
+                            isCollapsed
                                 ? "justify-center px-3"
                                 : "gap-3 px-4"
-                            }`}
+                        }`}
                     >
                         <Settings size={19} />
 
@@ -179,10 +222,11 @@ export default function Sidebar({
                 <Link
                     href="/profile"
                     title={isCollapsed ? "Profile" : undefined}
-                    className={`flex items-center rounded-lg p-2 transition hover:bg-gray-100 ${isCollapsed
+                    className={`flex items-center rounded-lg p-2 transition hover:bg-gray-100 ${
+                        isCollapsed
                             ? "justify-center"
                             : "gap-3"
-                        }`}
+                    }`}
                 >
                     {/* Avatar */}
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-900 text-sm font-semibold text-white">

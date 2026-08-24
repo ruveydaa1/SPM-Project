@@ -30,6 +30,14 @@ public class ScanRunRepository : IScanRunRepository
             .ToListAsync();
     }
 
+    public async Task<List<ScanRun>> GetAllAsync()
+    {
+        return await _context.ScanRuns
+            .Include(s => s.Findings)
+            .OrderByDescending(s => s.StartedAt)
+            .ToListAsync();
+    }
+
     public async Task AddAsync(ScanRun scanRun)
     {
         await _context.ScanRuns.AddAsync(scanRun);
