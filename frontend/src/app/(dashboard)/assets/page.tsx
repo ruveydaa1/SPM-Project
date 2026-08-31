@@ -408,8 +408,7 @@ export default function AssetsPage() {
                 {
                     method: "POST",
                     headers: {
-                        "Content-Type":
-                            "application/json",
+                        "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
@@ -423,8 +422,8 @@ export default function AssetsPage() {
             if (!response.ok) {
                 setScanError(
                     data?.error ||
-                        data?.message ||
-                        "Scan could not be completed."
+                    data?.message ||
+                    "Scan could not be completed."
                 );
 
                 return;
@@ -440,16 +439,13 @@ export default function AssetsPage() {
                 return;
             }
 
-            const maxAttempts = 60;
+            const timeout = 10 * 60 * 1000;
+            const startTime = Date.now();
             const delay = 1000;
 
             let completedScan: ScanRun | null = null;
 
-            for (
-                let attempt = 0;
-                attempt < maxAttempts;
-                attempt++
-            ) {
+            while (Date.now() - startTime < timeout) {
                 const scanRuns =
                     await fetchScanRuns(
                         selectedAsset.id
@@ -459,30 +455,24 @@ export default function AssetsPage() {
                     const currentScan =
                         scanRuns.find(
                             (scan) =>
-                                scan.id ===
-                                scanRunId
+                                scan.id === scanRunId
                         );
 
                     if (currentScan) {
-                        if (
-                            currentScan.status
-                                .toLowerCase() ===
-                            "completed"
-                        ) {
+                        const status =
+                            currentScan.status.toLowerCase();
+
+                        if (status === "completed") {
                             completedScan =
                                 currentScan;
 
                             break;
                         }
 
-                        if (
-                            currentScan.status
-                                .toLowerCase() ===
-                            "failed"
-                        ) {
+                        if (status === "failed") {
                             setScanError(
                                 currentScan.error ||
-                                    "Scan failed."
+                                "Scan failed."
                             );
 
                             return;
@@ -501,7 +491,7 @@ export default function AssetsPage() {
 
             if (!completedScan) {
                 throw new Error(
-                    "Scan did not complete within the expected time."
+                    "Scan did not complete within 10 minutes."
                 );
             }
 

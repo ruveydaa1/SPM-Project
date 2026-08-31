@@ -6,6 +6,7 @@ import {
     Users,
     Package,
     ScanLine,
+    ShieldAlert,
     Settings,
     ChevronLeft,
     ChevronRight,
@@ -188,6 +189,44 @@ export default function Sidebar({
 
                                 {!isCollapsed && (
                                     <span>Scans</span>
+                                )}
+                            </Link>
+                        )}
+
+                        {/* Vulnerabilities */}
+                        {user?.roles?.[0] === "User" ? (
+                            <div
+                                title="You do not have permission to access Vulnerabilities"
+                                className={`flex cursor-not-allowed items-center rounded-lg py-3 text-sm font-medium text-gray-400 ${
+                                    isCollapsed
+                                        ? "justify-center px-3"
+                                        : "gap-3 px-4"
+                                }`}
+                            >
+                                <ShieldAlert size={19} />
+
+                                {!isCollapsed && (
+                                    <span>Vulnerabilities</span>
+                                )}
+                            </div>
+                        ) : (
+                            <Link
+                                href="/vulnerabilities"
+                                title={
+                                    isCollapsed
+                                        ? "Vulnerabilities"
+                                        : undefined
+                                }
+                                className={`flex items-center rounded-lg py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 ${
+                                    isCollapsed
+                                        ? "justify-center px-3"
+                                        : "gap-3 px-4"
+                                }`}
+                            >
+                                <ShieldAlert size={19} />
+
+                                {!isCollapsed && (
+                                    <span>Vulnerabilities</span>
                                 )}
                             </Link>
                         )}

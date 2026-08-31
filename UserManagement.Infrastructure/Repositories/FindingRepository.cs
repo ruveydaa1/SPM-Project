@@ -40,6 +40,23 @@ public class FindingRepository : IFindingRepository
             .ToListAsync();
     }
 
+    // Sistemdeki tüm scan'lere ait tüm vulnerability finding'lerini getirir.
+    public async Task<List<Finding>> GetAllAsync()
+    {
+        return await _context.Findings
+            // Finding'in bağlı olduğu Asset bilgisini de getirir.
+            .Include(f => f.Asset)
+
+            // Finding'in bağlı olduğu ScanRun bilgisini de getirir.
+            .Include(f => f.ScanRun)
+
+            // En yeni finding'ler önce gelecek şekilde sıralar.
+            .OrderByDescending(f => f.CreatedAt)
+
+            // Sorguyu çalıştırır ve sonuçları List<Finding> olarak döndürür.
+            .ToListAsync();
+    }
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

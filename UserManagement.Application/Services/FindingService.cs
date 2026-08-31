@@ -16,4 +16,10 @@ public class FindingService : IFindingService
     {
         return await _findingRepository.GetByAssetIdAsync(assetId);
     }
+
+    // Sistemdeki tüm finding'leri repository üzerinden getirir.
+    public async Task<List<Finding>> GetAllAsync()
+    {
+        return await _findingRepository.GetAllAsync();
+    }
 }

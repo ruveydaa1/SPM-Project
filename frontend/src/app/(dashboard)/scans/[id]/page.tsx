@@ -17,6 +17,29 @@ export default function ScanDetailPage() {
     const [expandedFinding, setExpandedFinding] =
         useState<number | null>(null);
 
+    const formatDate = (date: string | null | undefined) => {
+        if (!date) {
+            return "-";
+        }
+
+        const parsedDate = new Date(date);
+
+        if (Number.isNaN(parsedDate.getTime())) {
+            return date;
+        }
+
+        return new Intl.DateTimeFormat("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+            timeZone: "Europe/Istanbul",
+        }).format(parsedDate);
+    };
+
     const fetchScan = async () => {
         try {
             setLoading(true);
@@ -128,7 +151,7 @@ export default function ScanDetailPage() {
             <div className="mb-6">
                 <button
                     onClick={() => router.push("/scans")}
-                    className="mb-4 inline-flex items-center text-sm font-medium text-gray-500 transition hover:text-gray-900"
+                    className="mb-4 inline-flex cursor-pointer items-center text-sm font-medium text-gray-500 transition hover:text-gray-900"
                 >
                     ← Back to Scans
                 </button>
@@ -210,7 +233,7 @@ export default function ScanDetailPage() {
                         </p>
 
                         <p className="mt-1 font-medium text-gray-900">
-                            {scan.startedAt}
+                            {formatDate(scan.startedAt)}
                         </p>
                     </div>
 
@@ -220,7 +243,7 @@ export default function ScanDetailPage() {
                         </p>
 
                         <p className="mt-1 font-medium text-gray-900">
-                            {scan.completedAt || "-"}
+                            {formatDate(scan.completedAt)}
                         </p>
                     </div>
                 </div>

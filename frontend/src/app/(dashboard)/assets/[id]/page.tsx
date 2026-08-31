@@ -242,16 +242,13 @@ export default function AssetDetailsPage() {
 
             setScanRunId(newScanRunId);
 
-            const maxAttempts = 60;
+            const timeout = 10 * 60 * 1000;
+            const startTime = Date.now();
             const delay = 1000;
 
             let completedScan: ScanRun | null = null;
 
-            for (
-                let attempt = 0;
-                attempt < maxAttempts;
-                attempt++
-            ) {
+            while (Date.now() - startTime < timeout) {
                 const scanRuns =
                     await fetchScanRuns(asset.id);
 
@@ -259,7 +256,8 @@ export default function AssetDetailsPage() {
                     const currentScan =
                         scanRuns.find(
                             (scan) =>
-                                scan.id === newScanRunId
+                                scan.id ===
+                                newScanRunId
                         );
 
                     if (currentScan) {
@@ -295,7 +293,7 @@ export default function AssetDetailsPage() {
 
             if (!completedScan) {
                 throw new Error(
-                    "Scan did not complete within the expected time."
+                    "Scan did not complete within 10 minutes."
                 );
             }
 

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 namespace UserManagement.Domain.Entities;
 
 public class ScanRun
@@ -20,5 +21,6 @@ public class ScanRun
 
     public Asset? Asset { get; set; }
 
+    [JsonIgnore]
     public ICollection<Finding> Findings { get; set; } = new List<Finding>();
 }

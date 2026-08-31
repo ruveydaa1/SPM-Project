@@ -6,7 +6,7 @@ namespace UserManagement.Controllers;
 
 [ApiController]
 [Route("api/findings")]
-[Authorize]
+[Authorize(Roles = "SuperAdmin,Admin,Developer")]
 public class FindingController : ControllerBase
 {
     private readonly IFindingService _findingService;
@@ -16,6 +16,17 @@ public class FindingController : ControllerBase
         _findingService = findingService;
     }
 
+    // Sistemdeki tüm vulnerability finding'lerini getirir.
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var findings =
+            await _findingService.GetAllAsync();
+
+        return Ok(findings);
+    }
+
+    // Belirli bir asset'in en son scan'ine ait finding'lerini getirir.
     [HttpGet("asset/{assetId:int}")]
     public async Task<IActionResult> GetByAssetId(int assetId)
     {

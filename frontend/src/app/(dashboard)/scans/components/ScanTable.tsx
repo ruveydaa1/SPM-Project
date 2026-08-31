@@ -11,6 +11,7 @@ export default function ScanTable({
     scanRuns,
 }: ScanTableProps) {
     const router = useRouter();
+
     return (
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="overflow-x-auto">
@@ -69,14 +70,15 @@ export default function ScanTable({
 
                                 <td className="px-6 py-4">
                                     <span
-                                        className={`rounded-full px-3 py-1 text-xs font-medium ${scan.status.toLowerCase() ===
-                                                "completed"
+                                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                            scan.status.toLowerCase() ===
+                                            "completed"
                                                 ? "bg-green-100 text-green-700"
                                                 : scan.status.toLowerCase() ===
                                                     "failed"
-                                                    ? "bg-red-100 text-red-700"
-                                                    : "bg-yellow-100 text-yellow-700"
-                                            }`}
+                                                  ? "bg-red-100 text-red-700"
+                                                  : "bg-yellow-100 text-yellow-700"
+                                        }`}
                                     >
                                         {scan.status}
                                     </span>
@@ -101,9 +103,11 @@ export default function ScanTable({
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            router.push(`/scans/${scan.id}`)
+                                            router.push(
+                                                `/scans/${scan.id}`
+                                            )
                                         }
-                                        className="font-medium text-blue-600 hover:text-blue-800"
+                                        className="cursor-pointer font-medium text-blue-600 transition hover:text-blue-800 hover:underline"
                                     >
                                         View
                                     </button>
