@@ -35,4 +35,22 @@ public class FindingController : ControllerBase
 
         return Ok(findings);
     }
+
+    // Belirli bir finding'i ID'sine göre getirir.
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var finding =
+            await _findingService.GetByIdAsync(id);
+
+        if (finding == null)
+        {
+            return NotFound(new
+            {
+                message = "Finding bulunamadı."
+            });
+        }
+
+        return Ok(finding);
+    }
 }

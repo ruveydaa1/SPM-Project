@@ -9,4 +9,6 @@ public interface IFindingService
 
     // Sistemdeki tüm finding'leri getirir.
     Task<List<Finding>> GetAllAsync();
+
+    Task<Finding?> GetByIdAsync(int id);
 }

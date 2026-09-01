@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
+import Link from "next/link";
 
 export default function VulnerabilitiesPage() {
     const { user } = useAuth();
@@ -101,9 +102,7 @@ export default function VulnerabilitiesPage() {
                 </h1>
 
                 <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4">
-                    <p className="text-sm text-red-600">
-                        {error}
-                    </p>
+                    <p className="text-sm text-red-600">{error}</p>
                 </div>
             </div>
         );
@@ -127,6 +126,7 @@ export default function VulnerabilitiesPage() {
 
     return (
         <div className="p-8">
+            {/* Header */}
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-900">
                     Vulnerabilities
@@ -137,7 +137,8 @@ export default function VulnerabilitiesPage() {
                 </p>
             </div>
 
-            <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+            {/* Main Card */}
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                 {/* Summary */}
                 <div className="border-b border-gray-200 px-6 py-4">
                     <p className="text-sm text-gray-500">
@@ -178,6 +179,10 @@ export default function VulnerabilitiesPage() {
                                     <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
                                         Detected At
                                     </th>
+
+                                    <th className="whitespace-nowrap px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Action
+                                    </th>
                                 </tr>
                             </thead>
 
@@ -185,7 +190,7 @@ export default function VulnerabilitiesPage() {
                                 {findings.map((finding) => (
                                     <tr
                                         key={finding.id}
-                                        className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
+                                        className="border-b border-gray-100 last:border-b-0"
                                     >
                                         {/* Severity */}
                                         <td className="px-6 py-4">
@@ -207,7 +212,7 @@ export default function VulnerabilitiesPage() {
                                             </p>
 
                                             {finding.message && (
-                                                <p className="mt-1 text-xs text-gray-500">
+                                                <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-500">
                                                     {finding.message}
                                                 </p>
                                             )}
@@ -232,6 +237,16 @@ export default function VulnerabilitiesPage() {
                                                     finding.createdAt
                                                 ).toLocaleString()
                                                 : "-"}
+                                        </td>
+
+                                        {/* Action */}
+                                        <td className="whitespace-nowrap px-6 py-4 text-right">
+                                            <Link
+                                                href={`/vulnerabilities/${finding.id}`}
+                                                className="text-sm font-medium text-gray-700 hover:text-gray-900 hover:underline"
+                                            >
+                                                View Details
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))}

@@ -10,6 +10,8 @@ public interface IFindingRepository
     // Sistemdeki tüm scan'lerden gelen findingleri getirir.
     Task<List<Finding>> GetAllAsync();
 
+    Task<Finding?> GetByIdAsync(int id);
+
     // Yeni finding kayıtlarını ekler.
     Task AddRangeAsync(List<Finding> findings);
 

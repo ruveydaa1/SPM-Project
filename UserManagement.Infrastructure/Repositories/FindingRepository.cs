@@ -57,6 +57,14 @@ public class FindingRepository : IFindingRepository
             .ToListAsync();
     }
 
+    public async Task<Finding?> GetByIdAsync(int id)
+    {
+        return await _context.Findings
+            .Include(f => f.Asset)
+            .Include(f => f.ScanRun)
+            .FirstOrDefaultAsync(f => f.Id == id);
+    }
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

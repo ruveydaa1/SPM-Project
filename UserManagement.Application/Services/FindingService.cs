@@ -22,4 +22,9 @@ public class FindingService : IFindingService
     {
         return await _findingRepository.GetAllAsync();
     }
+
+    public async Task<Finding?> GetByIdAsync(int id)
+    {
+        return await _findingRepository.GetByIdAsync(id);
+    }
 }
