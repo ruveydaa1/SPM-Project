@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
       
-# Required check test
+# Required check test - auto merge
