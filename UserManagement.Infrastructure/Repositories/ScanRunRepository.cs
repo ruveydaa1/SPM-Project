@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Application.Interfaces;
 using UserManagement.Domain.Entities;
@@ -18,6 +19,9 @@ public class ScanRunRepository : IScanRunRepository
     {
         return await _context.ScanRuns
             .Include(s => s.Findings)
+            .Include(s => s.StartedByUser)
+                .ThenInclude(u => u!.UserRoles)
+                    .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
@@ -25,6 +29,9 @@ public class ScanRunRepository : IScanRunRepository
     {
         return await _context.ScanRuns
             .Include(s => s.Findings)
+            .Include(s => s.StartedByUser)
+                .ThenInclude(u => u!.UserRoles)
+                    .ThenInclude(ur => ur.Role)
             .Where(s => s.AssetId == assetId)
             .OrderByDescending(s => s.StartedAt)
             .ToListAsync();
@@ -34,6 +41,9 @@ public class ScanRunRepository : IScanRunRepository
     {
         return await _context.ScanRuns
             .Include(s => s.Findings)
+            .Include(s => s.StartedByUser)
+                .ThenInclude(u => u!.UserRoles)
+                    .ThenInclude(ur => ur.Role)
             .OrderByDescending(s => s.StartedAt)
             .ToListAsync();
     }

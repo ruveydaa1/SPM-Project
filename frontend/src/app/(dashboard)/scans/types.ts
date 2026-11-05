@@ -19,6 +19,9 @@ export interface ScanFinding {
 export interface ScanRun {
     id: number;
     assetId: number;
+    startedByUserId: number | null;
+    startedByUserName: string | null;
+    startedByUserRole: string | null;
     scanner: string;
     source: string;
     status: string;

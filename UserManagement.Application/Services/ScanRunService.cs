@@ -1,3 +1,4 @@
+
 using UserManagement.Application.DTOs.Scan;
 using UserManagement.Application.Interfaces;
 
@@ -38,6 +39,9 @@ public class ScanRunService : IScanRunService
                     AssetId = f.AssetId,
                     ScanRunId = f.ScanRunId,
                     CheckId = f.CheckId,
+                    Identifier = f.Identifier,
+                    IdentifierType = f.IdentifierType,
+                    Title = f.Title,
                     Path = f.Path,
                     StartLine = f.StartLine,
                     StartColumn = f.StartColumn,
@@ -46,6 +50,10 @@ public class ScanRunService : IScanRunService
                     Message = f.Message,
                     Category = f.Category,
                     Severity = f.Severity,
+                    PackageName = f.PackageName,
+                    InstalledVersion = f.InstalledVersion,
+                    FixedVersion = f.FixedVersion,
+                    Status = f.Status,
                     Confidence = f.Confidence,
                     Impact = f.Impact,
                     Cwe = f.Cwe,
@@ -79,6 +87,9 @@ public class ScanRunService : IScanRunService
                     AssetId = f.AssetId,
                     ScanRunId = f.ScanRunId,
                     CheckId = f.CheckId,
+                    Identifier = f.Identifier,
+                    IdentifierType = f.IdentifierType,
+                    Title = f.Title,
                     Path = f.Path,
                     StartLine = f.StartLine,
                     StartColumn = f.StartColumn,
@@ -87,6 +98,10 @@ public class ScanRunService : IScanRunService
                     Message = f.Message,
                     Category = f.Category,
                     Severity = f.Severity,
+                    PackageName = f.PackageName,
+                    InstalledVersion = f.InstalledVersion,
+                    FixedVersion = f.FixedVersion,
+                    Status = f.Status,
                     Confidence = f.Confidence,
                     Impact = f.Impact,
                     Cwe = f.Cwe,

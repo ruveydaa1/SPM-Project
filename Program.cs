@@ -8,8 +8,25 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using UserManagement.Infrastructure.Persistence;
 using UserManagement.Infrastructure.Hubs;
+using Hangfire;
+using Hangfire.PostgreSql;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Hangfire - PostgreSQL üzerinden zamanlanmış görevler
+builder.Services.AddHangfire(configuration =>
+    configuration
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(options =>
+            options.UseNpgsqlConnection(
+                builder.Configuration.GetConnectionString("DefaultConnection")
+            )
+        )
+);
+
+builder.Services.AddHangfireServer();
 
 // PostgreSQL bağlantısı
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -34,7 +51,7 @@ builder.Services.AddScoped<IScanRunService, ScanRunService>();
 
 
 builder.Services.AddSingleton<KafkaScanProducer>();
-builder.Services.AddHostedService<KafkaScanResultConsumer>();
+builder.Services.AddTransient<ScheduledScanJob>();
 builder.Services.AddHostedService<KafkaScanProgressConsumer>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -131,6 +148,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseHangfireDashboard("/hangfire");
 
 // Authentication → Authorization sırası önemli
 app.UseAuthentication();
