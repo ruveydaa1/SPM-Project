@@ -31,6 +31,10 @@ export default function ScanTable({
                             </th>
 
                             <th className="px-6 py-4 font-semibold text-gray-700">
+                                Started By
+                            </th>
+
+                            <th className="px-6 py-4 font-semibold text-gray-700">
                                 Status
                             </th>
 
@@ -68,17 +72,20 @@ export default function ScanTable({
                                     {scan.scanner}
                                 </td>
 
+                                <td className="px-6 py-4 text-gray-700">
+                                    {scan.startedByUserName || "N/A"}
+                                </td>
+
                                 <td className="px-6 py-4">
                                     <span
-                                        className={`rounded-full px-3 py-1 text-xs font-medium ${
-                                            scan.status.toLowerCase() ===
+                                        className={`rounded-full px-3 py-1 text-xs font-medium ${scan.status.toLowerCase() ===
                                             "completed"
-                                                ? "bg-green-100 text-green-700"
-                                                : scan.status.toLowerCase() ===
-                                                    "failed"
-                                                  ? "bg-red-100 text-red-700"
-                                                  : "bg-yellow-100 text-yellow-700"
-                                        }`}
+                                            ? "bg-green-100 text-green-700"
+                                            : scan.status.toLowerCase() ===
+                                                "failed"
+                                                ? "bg-red-100 text-red-700"
+                                                : "bg-yellow-100 text-yellow-700"
+                                            }`}
                                     >
                                         {scan.status}
                                     </span>

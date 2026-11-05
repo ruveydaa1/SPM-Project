@@ -53,12 +53,6 @@ namespace UserManagement.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
-                    b.Property<string>("ScanSource")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("scan_source");
-
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -121,19 +115,51 @@ namespace UserManagement.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("cwe");
 
-                    b.Property<int>("EndColumn")
+                    b.Property<int?>("EndColumn")
                         .HasColumnType("integer")
                         .HasColumnName("end_column");
 
-                    b.Property<int>("EndLine")
+                    b.Property<int?>("EndLine")
                         .HasColumnType("integer")
                         .HasColumnName("end_line");
+
+                    b.Property<string>("FixedVersion")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasDefaultValue("")
+                        .HasColumnName("fixed_version");
+
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasDefaultValue("")
+                        .HasColumnName("identifier");
+
+                    b.Property<string>("IdentifierType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasDefaultValue("")
+                        .HasColumnName("identifier_type");
 
                     b.Property<string>("Impact")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("impact");
+
+                    b.Property<string>("InstalledVersion")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasDefaultValue("")
+                        .HasColumnName("installed_version");
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -146,6 +172,14 @@ namespace UserManagement.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("owasp");
+
+                    b.Property<string>("PackageName")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasDefaultValue("")
+                        .HasColumnName("package_name");
 
                     b.Property<string>("Path")
                         .IsRequired()
@@ -169,13 +203,29 @@ namespace UserManagement.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("severity");
 
-                    b.Property<int>("StartColumn")
+                    b.Property<int?>("StartColumn")
                         .HasColumnType("integer")
                         .HasColumnName("start_column");
 
-                    b.Property<int>("StartLine")
+                    b.Property<int?>("StartLine")
                         .HasColumnType("integer")
                         .HasColumnName("start_line");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Open")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasDefaultValue("")
+                        .HasColumnName("title");
 
                     b.Property<string>("VulnerabilityClass")
                         .IsRequired()
@@ -254,6 +304,10 @@ namespace UserManagement.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("started_at");
 
+                    b.Property<int?>("StartedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("started_by_user_id");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -264,7 +318,75 @@ namespace UserManagement.Migrations
 
                     b.HasIndex("AssetId");
 
+                    b.HasIndex("StartedByUserId");
+
                     b.ToTable("scan_runs", (string)null);
+                });
+
+            modelBuilder.Entity("UserManagement.Domain.Entities.ScheduledScan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssetId")
+                        .HasColumnType("integer")
+                        .HasColumnName("asset_id");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("completed_at");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Error")
+                        .IsRequired()
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)")
+                        .HasColumnName("error");
+
+                    b.Property<int?>("ScanRunId")
+                        .HasColumnType("integer")
+                        .HasColumnName("scan_run_id");
+
+                    b.Property<string>("Scanner")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("scanner");
+
+                    b.Property<DateTime>("ScheduledAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("scheduled_at");
+
+                    b.Property<int?>("ScheduledByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("scheduled_by_user_id");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("started_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("ScanRunId");
+
+                    b.HasIndex("ScheduledByUserId");
+
+                    b.ToTable("scheduled_scans", (string)null);
                 });
 
             modelBuilder.Entity("UserManagement.Domain.Entities.User", b =>
@@ -374,7 +496,39 @@ namespace UserManagement.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("UserManagement.Domain.Entities.User", "StartedByUser")
+                        .WithMany()
+                        .HasForeignKey("StartedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Asset");
+
+                    b.Navigation("StartedByUser");
+                });
+
+            modelBuilder.Entity("UserManagement.Domain.Entities.ScheduledScan", b =>
+                {
+                    b.HasOne("UserManagement.Domain.Entities.Asset", "Asset")
+                        .WithMany()
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UserManagement.Domain.Entities.ScanRun", "ScanRun")
+                        .WithMany()
+                        .HasForeignKey("ScanRunId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("UserManagement.Domain.Entities.User", "ScheduledByUser")
+                        .WithMany()
+                        .HasForeignKey("ScheduledByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Asset");
+
+                    b.Navigation("ScanRun");
+
+                    b.Navigation("ScheduledByUser");
                 });
 
             modelBuilder.Entity("UserManagement.Domain.Entities.UserRole", b =>

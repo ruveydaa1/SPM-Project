@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using UserManagement.Infrastructure.Persistence;
 using UserManagement.Application.DTOs.Scan;
 using UserManagement.Application.Interfaces;
 using UserManagement.Domain.Entities;
@@ -95,6 +97,9 @@ public class KafkaScanResultConsumer : BackgroundService
                     using var scope =
                         _scopeFactory.CreateScope();
 
+                    var dbContext = scope.ServiceProvider
+                        .GetRequiredService<AppDbContext>();
+
                     var findingRepository =
                         scope.ServiceProvider
                             .GetRequiredService<IFindingRepository>();
@@ -116,6 +121,14 @@ public class KafkaScanResultConsumer : BackgroundService
                         continue;
                     }
 
+                    var scheduledScan = await dbContext.ScheduledScans
+                        .FirstOrDefaultAsync(s => s.ScanRunId == scanRun.Id);
+
+                    _logger.LogInformation(
+                        "ScheduledScan eşleşmesi: ScanRunId={ScanRunId}, ScheduledScanId={ScheduledScanId}",
+                        scanRun.Id,
+                        scheduledScan?.Id);
+
                     if (scanResult.Success)
                     {
                         scanRun.Status = "Completed";
@@ -133,65 +146,54 @@ public class KafkaScanResultConsumer : BackgroundService
 
                         if (scanResult.Findings.Count > 0)
                         {
-                            var findings =
-                                scanResult.Findings
-                                    .Select(f => new Finding
-                                    {
-                                        AssetId =
-                                            scanResult.AssetId,
 
-                                        ScanRunId =
-                                            scanResult.ScanRunId,
+                            var findings = scanResult.Findings
+                                .Select(f => new Finding
+                                {
+                                    AssetId = scanResult.AssetId,
+                                    ScanRunId = scanResult.ScanRunId,
 
-                                        CheckId =
-                                            f.CheckId,
+                                    CheckId = f.CheckId,
 
-                                        Path =
-                                            f.Path,
+                                    Identifier = f.Identifier,
+                                    IdentifierType = f.IdentifierType,
 
-                                        StartLine =
-                                            f.StartLine,
+                                    // Semgrep eski sonuçlarında Title boş gelebilir.
+                                    // Bu durumda açıklamayı başlık olarak kullanıyoruz.
+                                    Title = string.IsNullOrWhiteSpace(f.Title)
+                                        ? f.Message
+                                        : f.Title,
 
-                                        StartColumn =
-                                            f.StartColumn,
+                                    Path = f.Path,
 
-                                        EndLine =
-                                            f.EndLine,
+                                    StartLine = f.StartLine,
+                                    StartColumn = f.StartColumn,
+                                    EndLine = f.EndLine,
+                                    EndColumn = f.EndColumn,
 
-                                        EndColumn =
-                                            f.EndColumn,
+                                    Message = f.Message,
+                                    Category = f.Category,
+                                    Severity = f.Severity,
 
-                                        Message =
-                                            f.Message,
+                                    PackageName = f.PackageName,
+                                    InstalledVersion = f.InstalledVersion,
+                                    FixedVersion = f.FixedVersion,
 
-                                        Category =
-                                            f.Category,
+                                    Status = string.IsNullOrWhiteSpace(f.Status)
+                                        ? "Open"
+                                        : f.Status,
 
-                                        Severity =
-                                            f.Severity,
+                                    Confidence = f.Confidence,
+                                    Impact = f.Impact,
+                                    Cwe = f.Cwe,
+                                    Owasp = f.Owasp,
+                                    VulnerabilityClass = f.VulnerabilityClass,
+                                    Reference = f.Reference,
 
-                                        Confidence =
-                                            f.Confidence,
+                                    CreatedAt = DateTime.UtcNow
+                                })
+                                .ToList();
 
-                                        Impact =
-                                            f.Impact,
-
-                                        Cwe =
-                                            f.Cwe,
-
-                                        Owasp =
-                                            f.Owasp,
-
-                                        VulnerabilityClass =
-                                            f.VulnerabilityClass,
-
-                                        Reference =
-                                            f.Reference,
-
-                                        CreatedAt =
-                                            DateTime.UtcNow
-                                    })
-                                    .ToList();
 
                             await findingRepository
                                 .AddRangeAsync(findings);
@@ -212,6 +214,15 @@ public class KafkaScanResultConsumer : BackgroundService
                                 scanResult.AssetId,
                                 scanResult.ScanRunId);
                         }
+
+                        if (scheduledScan != null)
+                        {
+                            scheduledScan.Status = "Completed";
+                            scheduledScan.Error = string.Empty;
+                            scheduledScan.CompletedAt = DateTime.UtcNow;
+
+                            await dbContext.SaveChangesAsync();
+                        }
                     }
                     else
                     {
@@ -223,6 +234,15 @@ public class KafkaScanResultConsumer : BackgroundService
 
                         await scanRunRepository
                             .SaveChangesAsync();
+
+                        if (scheduledScan != null)
+                        {
+                            scheduledScan.Status = "Failed";
+                            scheduledScan.Error = scanResult.Error;
+                            scheduledScan.CompletedAt = DateTime.UtcNow;
+
+                            await dbContext.SaveChangesAsync();
+                        }
 
                         _logger.LogWarning(
                             "Asset scan başarısız oldu. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Error: {Error}",

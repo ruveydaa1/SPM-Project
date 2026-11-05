@@ -68,7 +68,7 @@ export default function ScanDetailPage() {
             if (!response.ok) {
                 setError(
                     data?.message ||
-                        "Scan details could not be retrieved."
+                    "Scan details could not be retrieved."
                 );
 
                 return;
@@ -176,7 +176,25 @@ export default function ScanDetailPage() {
                             #{scan.assetId}
                         </p>
                     </div>
+                    
+                    <div>
+                        <p className="text-sm text-gray-400">
+                            Started By
+                        </p>
+                        <p className="mt-1 font-medium text-gray-900">
+                            {scan.startedByUserName || "N/A"}
+                        </p>
+                    </div>
 
+                    <div>
+                        <p className="text-sm text-gray-400">
+                            Role
+                        </p>
+                        <p className="mt-1 font-medium text-gray-900">
+                            {scan.startedByUserRole || "N/A"}
+                        </p>
+                    </div>
+                    
                     <div>
                         <p className="text-sm text-gray-400">
                             Scanner
@@ -193,15 +211,14 @@ export default function ScanDetailPage() {
                         </p>
 
                         <span
-                            className={`mt-1 inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                                scan.status.toLowerCase() ===
-                                "completed"
+                            className={`mt-1 inline-block rounded-full px-3 py-1 text-xs font-medium ${scan.status.toLowerCase() ===
+                                    "completed"
                                     ? "bg-green-100 text-green-700"
                                     : scan.status.toLowerCase() ===
                                         "failed"
-                                      ? "bg-red-100 text-red-700"
-                                      : "bg-yellow-100 text-yellow-700"
-                            }`}
+                                        ? "bg-red-100 text-red-700"
+                                        : "bg-yellow-100 text-yellow-700"
+                                }`}
                         >
                             {scan.status}
                         </span>
@@ -309,20 +326,20 @@ export default function ScanDetailPage() {
                                                 finding.cwe
                                             )
                                                 ? finding.cwe.join(
-                                                      ", "
-                                                  )
+                                                    ", "
+                                                )
                                                 : finding.cwe ||
-                                                  "-";
+                                                "-";
 
                                         const owaspValue =
                                             Array.isArray(
                                                 finding.owasp
                                             )
                                                 ? finding.owasp.join(
-                                                      ", "
-                                                  )
+                                                    ", "
+                                                )
                                                 : finding.owasp ||
-                                                  "-";
+                                                "-";
 
                                         return (
                                             <Fragment
@@ -340,18 +357,17 @@ export default function ScanDetailPage() {
                                                 >
                                                     <td className="px-6 py-4">
                                                         <span
-                                                            className={`rounded-full px-3 py-1 text-xs font-medium ${
-                                                                finding.severity?.toLowerCase() ===
-                                                                "high"
+                                                            className={`rounded-full px-3 py-1 text-xs font-medium ${finding.severity?.toLowerCase() ===
+                                                                    "high"
                                                                     ? "bg-red-100 text-red-700"
                                                                     : finding.severity?.toLowerCase() ===
                                                                         "medium"
-                                                                      ? "bg-yellow-100 text-yellow-700"
-                                                                      : finding.severity?.toLowerCase() ===
-                                                                          "low"
-                                                                        ? "bg-blue-100 text-blue-700"
-                                                                        : "bg-gray-100 text-gray-700"
-                                                            }`}
+                                                                        ? "bg-yellow-100 text-yellow-700"
+                                                                        : finding.severity?.toLowerCase() ===
+                                                                            "low"
+                                                                            ? "bg-blue-100 text-blue-700"
+                                                                            : "bg-gray-100 text-gray-700"
+                                                                }`}
                                                         >
                                                             {
                                                                 finding.severity

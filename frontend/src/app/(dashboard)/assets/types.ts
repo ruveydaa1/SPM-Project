@@ -16,12 +16,15 @@ export type Finding = {
     scanRunId: number;
 
     checkId: string;
-    path: string;
+    identifier?: string | null;
+    identifierType?: string | null;
+    title?: string | null;
 
-    startLine: number;
-    startColumn: number;
-    endLine: number;
-    endColumn: number;
+    path: string;
+    startLine: number | null;
+    startColumn: number | null;
+    endLine: number | null;
+    endColumn: number | null;
 
     message: string;
 
@@ -34,8 +37,12 @@ export type Finding = {
     owasp: string;
     vulnerabilityClass: string;
 
-    reference: string;
+    packageName?: string | null;
+    installedVersion?: string | null;
+    fixedVersion?: string | null;
+    status?: string | null;
 
+    reference: string;
     createdAt: string;
 };
 

@@ -22,6 +22,8 @@ public class AppDbContext : DbContext
 
     public DbSet<ScanRun> ScanRuns { get; set; }
 
+    public DbSet<ScheduledScan> ScheduledScans { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -147,6 +149,7 @@ public class AppDbContext : DbContext
                 .HasColumnName("description")
                 .HasMaxLength(1000);
 
+
             entity.Property(a => a.IsActive)
                 .HasColumnName("is_active")
                 .HasDefaultValue(true);
@@ -157,6 +160,7 @@ public class AppDbContext : DbContext
             entity.Property(a => a.UpdatedAt)
                 .HasColumnName("updated_at");
         });
+
 
         // ScanRuns
         modelBuilder.Entity<ScanRun>(entity =>
@@ -171,6 +175,9 @@ public class AppDbContext : DbContext
             entity.Property(s => s.AssetId)
                 .HasColumnName("asset_id")
                 .IsRequired();
+
+            entity.Property(s => s.StartedByUserId)
+                .HasColumnName("started_by_user_id");
 
             entity.Property(s => s.Scanner)
                 .HasColumnName("scanner")
@@ -201,7 +208,77 @@ public class AppDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(s => s.AssetId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(s => s.StartedByUser)
+                .WithMany()
+                .HasForeignKey(s => s.StartedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
+
+
+        // ScheduledScans
+        modelBuilder.Entity<ScheduledScan>(entity =>
+        {
+            entity.ToTable("scheduled_scans");
+
+            entity.HasKey(s => s.Id);
+
+            entity.Property(s => s.Id)
+                .HasColumnName("id");
+
+            entity.Property(s => s.AssetId)
+                .HasColumnName("asset_id")
+                .IsRequired();
+
+            entity.Property(s => s.ScheduledByUserId)
+                .HasColumnName("scheduled_by_user_id");
+
+            entity.Property(s => s.Scanner)
+                .HasColumnName("scanner")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(s => s.Status)
+                .HasColumnName("status")
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(s => s.ScheduledAt)
+                .HasColumnName("scheduled_at");
+
+            entity.Property(s => s.CreatedAt)
+                .HasColumnName("created_at");
+
+            entity.Property(s => s.StartedAt)
+                .HasColumnName("started_at");
+
+            entity.Property(s => s.CompletedAt)
+                .HasColumnName("completed_at");
+
+            entity.Property(s => s.ScanRunId)
+                .HasColumnName("scan_run_id");
+
+            entity.Property(s => s.Error)
+                .HasColumnName("error")
+                .HasMaxLength(5000);
+
+            entity.HasOne(s => s.Asset)
+                .WithMany()
+                .HasForeignKey(s => s.AssetId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(s => s.ScheduledByUser)
+                .WithMany()
+                .HasForeignKey(s => s.ScheduledByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(s => s.ScanRun)
+                .WithMany()
+                .HasForeignKey(s => s.ScanRunId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+
 
         // Findings
         modelBuilder.Entity<Finding>(entity =>
@@ -217,9 +294,31 @@ public class AppDbContext : DbContext
                 .HasColumnName("asset_id")
                 .IsRequired();
 
+            entity.Property(f => f.ScanRunId)
+                .HasColumnName("scan_run_id")
+                .IsRequired();
+
             entity.Property(f => f.CheckId)
                 .HasColumnName("check_id")
                 .HasMaxLength(500)
+                .IsRequired();
+
+            entity.Property(f => f.Identifier)
+                .HasColumnName("identifier")
+                .HasMaxLength(500)
+                .HasDefaultValue("")
+                .IsRequired();
+
+            entity.Property(f => f.IdentifierType)
+                .HasColumnName("identifier_type")
+                .HasMaxLength(100)
+                .HasDefaultValue("")
+                .IsRequired();
+
+            entity.Property(f => f.Title)
+                .HasColumnName("title")
+                .HasMaxLength(1000)
+                .HasDefaultValue("")
                 .IsRequired();
 
             entity.Property(f => f.Path)
@@ -241,15 +340,42 @@ public class AppDbContext : DbContext
 
             entity.Property(f => f.Message)
                 .HasColumnName("message")
-                .HasMaxLength(5000);
+                .HasMaxLength(5000)
+                .IsRequired();
 
             entity.Property(f => f.Category)
                 .HasColumnName("category")
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .IsRequired();
 
             entity.Property(f => f.Severity)
                 .HasColumnName("severity")
-                .HasMaxLength(50);
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(f => f.PackageName)
+                .HasColumnName("package_name")
+                .HasMaxLength(500)
+                .HasDefaultValue("")
+                .IsRequired();
+
+            entity.Property(f => f.InstalledVersion)
+                .HasColumnName("installed_version")
+                .HasMaxLength(100)
+                .HasDefaultValue("")
+                .IsRequired();
+
+            entity.Property(f => f.FixedVersion)
+                .HasColumnName("fixed_version")
+                .HasMaxLength(100)
+                .HasDefaultValue("")
+                .IsRequired();
+
+            entity.Property(f => f.Status)
+                .HasColumnName("status")
+                .HasMaxLength(50)
+                .HasDefaultValue("Open")
+                .IsRequired();
 
             entity.Property(f => f.Confidence)
                 .HasColumnName("confidence")
@@ -278,10 +404,6 @@ public class AppDbContext : DbContext
             entity.Property(f => f.CreatedAt)
                 .HasColumnName("created_at");
 
-            entity.Property(f => f.ScanRunId)
-                .HasColumnName("scan_run_id")
-                .IsRequired();
-
             entity.HasOne(f => f.Asset)
                 .WithMany()
                 .HasForeignKey(f => f.AssetId)
@@ -292,5 +414,6 @@ public class AppDbContext : DbContext
                 .HasForeignKey(f => f.ScanRunId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
     }
 }
