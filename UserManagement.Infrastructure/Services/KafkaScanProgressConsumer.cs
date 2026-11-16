@@ -58,7 +58,7 @@ public class KafkaScanProgressConsumer : BackgroundService
         consumer.Subscribe(topic);
 
         _logger.LogInformation(
-            "Kafka scan progress consumer başlatıldı. Topic: {Topic}",
+            "Kafka scan progress consumer started. Topic: {Topic}",
             topic);
 
         try
@@ -83,13 +83,13 @@ public class KafkaScanProgressConsumer : BackgroundService
                     if (progress == null)
                     {
                         _logger.LogWarning(
-                            "Kafka scan progress mesajı çözümlenemedi.");
+                            "Failed to deserialize Kafka scan progress message.");
 
                         continue;
                     }
 
                     _logger.LogInformation(
-                        "Scan progress alındı. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Status: {Status}, Message: {Message}",
+                        "Scan progress received. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Status: {Status}, Message: {Message}",
                         progress.AssetId,
                         progress.ScanRunId,
                         progress.Status,
@@ -106,13 +106,13 @@ public class KafkaScanProgressConsumer : BackgroundService
                 {
                     _logger.LogError(
                         ex,
-                        "Kafka scan progress mesajı tüketilirken hata oluştu.");
+                        "An error occurred while consuming the Kafka scan progress message.");
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(
                         ex,
-                        "Scan progress işlenirken beklenmeyen hata oluştu.");
+                        "An unexpected error occurred while processing scan progress.");
                 }
             }
         }
@@ -125,7 +125,7 @@ public class KafkaScanProgressConsumer : BackgroundService
             consumer.Close();
 
             _logger.LogInformation(
-                "Kafka scan progress consumer durduruldu.");
+                "Kafka scan progress consumer stopped.");
         }
     }
 

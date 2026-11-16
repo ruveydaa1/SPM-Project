@@ -68,14 +68,14 @@ public class UserService : IUserService
         if (emailExists)
         {
             throw new InvalidOperationException(
-                "Bu email adresi zaten kullanılıyor."
+                "This email address is already in use."
             );
         }
 
         if (request.Role.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException(
-                "SuperAdmin rolü yeni kullanıcıya atanamaz."
+                "The SuperAdmin role cannot be assigned to a new user."
             );
         }
 
@@ -84,7 +84,7 @@ public class UserService : IUserService
         if (role == null)
         {
             throw new InvalidOperationException(
-                "Belirtilen rol bulunamadı."
+                "The specified role was not found."
             );
         }
 
@@ -130,7 +130,7 @@ public class UserService : IUserService
         if (user == null)
         {
             throw new InvalidOperationException(
-                "Kullanıcı bulunamadı."
+                "User not found."
             );
         }
 
@@ -139,7 +139,7 @@ public class UserService : IUserService
         if (emailExists && user.Email != request.Email)
         {
             throw new InvalidOperationException(
-                "Bu email adresi zaten kullanılıyor."
+                "This email address is already in use."
             );
         }
 
@@ -148,7 +148,7 @@ public class UserService : IUserService
         if (role == null)
         {
             throw new InvalidOperationException(
-                "Belirtilen rol bulunamadı."
+                "The specified role was not found."
             );
         }
 
@@ -195,7 +195,7 @@ public class UserService : IUserService
         if (user == null)
         {
             throw new InvalidOperationException(
-                "Kullanıcı bulunamadı."
+                "User not found."
             );
         }
 

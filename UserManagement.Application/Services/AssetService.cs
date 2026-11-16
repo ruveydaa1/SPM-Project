@@ -81,7 +81,7 @@ public class AssetService : IAssetService
         if (asset == null)
         {
             throw new InvalidOperationException(
-                "Asset bulunamadı.");
+                "Asset not found.");
         }
 
         await _assetRepository.DeleteAsync(asset);

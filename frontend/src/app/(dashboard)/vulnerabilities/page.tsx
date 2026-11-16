@@ -206,7 +206,9 @@ export default function VulnerabilitiesPage() {
                                         {/* Vulnerability */}
                                         <td className="max-w-md px-6 py-4">
                                             <p className="font-medium text-gray-900">
-                                                {finding.vulnerabilityClass ||
+                                                {finding.scanRun?.scanner?.toLowerCase() === "gitleaks"
+                                                    ? finding.message || "Unknown vulnerability"
+                                                    : finding.vulnerabilityClass ||
                                                     finding.checkId ||
                                                     "Unknown vulnerability"}
                                             </p>

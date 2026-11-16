@@ -41,6 +41,13 @@ export default function AssetDetailsPage() {
     const [selectedScanner, setSelectedScanner] =
         useState("Semgrep");
 
+    const [scanners, setScanners] = useState<string[]>([]);
+
+    const [isLoadingScanners, setIsLoadingScanners] =
+        useState(true);
+
+    const [scannerError, setScannerError] = useState("");
+
     const [isLoading, setIsLoading] = useState(true);
     const [isScanning, setIsScanning] = useState(false);
 
@@ -112,6 +119,70 @@ export default function AssetDetailsPage() {
             fetchAsset();
         }
     }, [user, assetId]);
+
+
+    useEffect(() => {
+        if (!user || user.roles?.[0] === "User") {
+            return;
+        }
+
+        const loadScanners = async () => {
+            try {
+                setIsLoadingScanners(true);
+                setScannerError("");
+
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    throw new Error("Authentication token not found.");
+                }
+
+                const response = await fetch(
+                    "http://localhost:5245/api/scanners",
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                        cache: "no-store",
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Scanner list could not be retrieved.");
+                }
+
+                const data: string[] = await response.json();
+
+                setScanners(data);
+
+                setSelectedScanner((currentScanner) =>
+                    data.includes(currentScanner)
+                        ? currentScanner
+                        : data[0] ?? ""
+                );
+
+                if (data.length === 0) {
+                    setScannerError("No available scanners found.");
+                }
+            } catch (error) {
+                console.error("Scanner list error:", error);
+
+                setScanners([]);
+
+                setScannerError(
+                    error instanceof Error
+                        ? error.message
+                        : "Scanner list could not be retrieved."
+                );
+            } finally {
+                setIsLoadingScanners(false);
+            }
+        };
+
+        void loadScanners();
+    }, [user]);
+
 
     useEffect(() => {
         if (!user || user.roles?.[0] === "User") {
@@ -279,7 +350,7 @@ export default function AssetDetailsPage() {
     };
 
     const handleScan = async () => {
-        if (!asset) {
+        if (!asset || !selectedScanner) {
             return;
         }
 
@@ -474,7 +545,7 @@ export default function AssetDetailsPage() {
 
 
     const handleScheduleScan = async () => {
-        if (!asset) {
+        if (!asset || !selectedScanner) {
             return;
         }
 
@@ -740,31 +811,50 @@ export default function AssetDetailsPage() {
                                         Scanner
                                     </label>
 
+
                                     <select
                                         id="scanner"
                                         value={selectedScanner}
                                         onChange={(e) =>
-                                            setSelectedScanner(
-                                                e.target.value
-                                            )
+                                            setSelectedScanner(e.target.value)
                                         }
-                                        disabled={isScanning}
-                                        className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100 disabled:bg-gray-100"
+                                        disabled={
+                                            isScanning ||
+                                            isLoadingScanners ||
+                                            scanners.length === 0
+                                        }
+                                        className="h-12 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm outline-none transition-all hover:border-gray-300 focus:border-gray-400 focus:ring-2 focus:ring-gray-100 disabled:bg-gray-100"
                                     >
-                                        <option value="Semgrep">
-                                            Semgrep
-                                        </option>
-
-                                        <option value="Trivy">
-                                            Trivy
-                                        </option>
+                                        {scanners.map((scanner) => (
+                                            <option key={scanner} value={scanner} className="text-sm">
+                                                {scanner}
+                                            </option>
+                                        ))}
                                     </select>
+
+                                    {isLoadingScanners && (
+                                        <p className="mt-2 text-xs text-gray-500">
+                                            Loading scanners...
+                                        </p>
+                                    )}
+
+                                    {scannerError && (
+                                        <p className="mt-2 text-xs text-red-600">
+                                            {scannerError}
+                                        </p>
+                                    )}
+
                                 </div>
 
                                 <button
                                     type="button"
                                     onClick={handleScan}
-                                    disabled={isScanning}
+                                    disabled={
+                                        isScanning ||
+                                        isLoadingScanners ||
+                                        scanners.length === 0 ||
+                                        !selectedScanner
+                                    }
                                     className="h-11 rounded-lg bg-gray-900 px-6 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
                                 >
                                     {isScanning
@@ -779,7 +869,12 @@ export default function AssetDetailsPage() {
                                         setScheduleMessage("");
                                         setIsScheduleModalOpen(true);
                                     }}
-                                    className="h-11 rounded-lg bg-blue-600 px-6 text-sm font-medium text-white transition hover:bg-blue-700"
+                                    disabled={
+                                        isLoadingScanners ||
+                                        scanners.length === 0 ||
+                                        !selectedScanner
+                                    }
+                                    className="h-11 rounded-lg bg-blue-600 px-6 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
                                 >
                                     Schedule Scan
                                 </button>
@@ -1034,13 +1129,13 @@ export default function AssetDetailsPage() {
                                                                             </h4>
                                                                         </div>
 
-                                                                            {finding.message &&
-                                                                                finding.message.trim() !== finding.title?.trim() && (
-                                                                                    <p className="mt-2 text-sm leading-6 text-gray-700">
-                                                                                        {finding.message}
-                                                                                    </p>
-                                                                                )}
-                                                                        
+                                                                        {finding.message &&
+                                                                            finding.message.trim() !== finding.title?.trim() && (
+                                                                                <p className="mt-2 text-sm leading-6 text-gray-700">
+                                                                                    {finding.message}
+                                                                                </p>
+                                                                            )}
+
                                                                     </div>
 
                                                                     <span className="shrink-0 rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">

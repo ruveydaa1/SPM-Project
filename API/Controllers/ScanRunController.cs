@@ -102,7 +102,7 @@ public class ScanRunController : ControllerBase
         {
             return NotFound(new
             {
-                message = "ScanRun bulunamadı."
+                message = "Scan run not found."
             });
         }
 
@@ -159,12 +159,12 @@ public class ScanRunController : ControllerBase
         {
             return BadRequest(new
             {
-                message = "Scan sonucu boş olamaz."
+                message = "Scan result cannot be empty."
             });
         }
 
         _logger.LogInformation(
-            "Scan sonucu alındı. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Success: {Success}",
+            "Scan result received. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Success: {Success}",
             scanResult.AssetId,
             scanResult.ScanRunId,
             scanResult.Success);
@@ -177,7 +177,7 @@ public class ScanRunController : ControllerBase
         {
             return NotFound(new
             {
-                message = "ScanRun bulunamadı."
+                message = "Scan run not found."
             });
         }
 
@@ -243,7 +243,7 @@ public class ScanRunController : ControllerBase
                 await _findingRepository.SaveChangesAsync();
 
                 _logger.LogInformation(
-                    "{Count} adet finding veritabanına kaydedildi. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
+                    "{Count} findings saved to the database. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
                     findings.Count,
                     scanResult.AssetId,
                     scanResult.ScanRunId);
@@ -267,7 +267,7 @@ public class ScanRunController : ControllerBase
             await _scanRunRepository.SaveChangesAsync();
 
             _logger.LogWarning(
-                "Asset scan başarısız oldu. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Error: {Error}",
+                "Asset scan failed. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Error: {Error}",
                 scanResult.AssetId,
                 scanResult.ScanRunId,
                 scanResult.Error);
@@ -284,7 +284,7 @@ public class ScanRunController : ControllerBase
 
         return Ok(new
         {
-            message = "Scan sonucu başarıyla işlendi."
+            message = "Scan result processed successfully."
         });
     }
 

@@ -26,12 +26,12 @@ public class AuthService : IAuthService
 
         if (user == null)
         {
-            throw new UnauthorizedAccessException("Email veya şifre hatalı.");
+            throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
         if (!user.IsActive)
         {
-            throw new UnauthorizedAccessException("Kullanıcı hesabı aktif değil.");
+            throw new UnauthorizedAccessException("User account is inactive.");
         }
 
         bool passwordValid = BCrypt.Net.BCrypt.Verify(
@@ -41,7 +41,7 @@ public class AuthService : IAuthService
 
         if (!passwordValid)
         {
-            throw new UnauthorizedAccessException("Email veya şifre hatalı.");
+            throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
         var roles = user.UserRoles
@@ -126,14 +126,14 @@ public class AuthService : IAuthService
         if (user == null)
         {
             throw new UnauthorizedAccessException(
-                "Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı."
+                "Invalid or expired password reset link."
             );
         }
 
         if (user.PasswordResetToken != request.Token)
         {
             throw new UnauthorizedAccessException(
-                "Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı."
+                "Invalid or expired password reset link."
             );
         }
 
@@ -143,7 +143,7 @@ public class AuthService : IAuthService
         )
         {
             throw new UnauthorizedAccessException(
-                "Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı."
+                "Invalid or expired password reset link."
             );
         }
 
