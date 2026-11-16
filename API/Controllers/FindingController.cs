@@ -47,7 +47,7 @@ public class FindingController : ControllerBase
         {
             return NotFound(new
             {
-                message = "Finding bulunamadı."
+                message = "Finding not found."
             });
         }
 

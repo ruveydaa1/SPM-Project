@@ -56,7 +56,7 @@ public class AssetsController : ControllerBase
         {
             return NotFound(new
             {
-                message = "Asset bulunamadı."
+                message = "Asset not found."
             });
         }
 
@@ -73,7 +73,7 @@ public class AssetsController : ControllerBase
         {
             return NotFound(new
             {
-                message = "Asset bulunamadı."
+                message = "Asset not found."
             });
         }
 
@@ -94,7 +94,7 @@ public class AssetsController : ControllerBase
 
             return Ok(new
             {
-                message = "Asset başarıyla oluşturuldu.",
+                message = "Asset created successfully.",
                 assetId
             });
         }
@@ -119,7 +119,7 @@ public class AssetsController : ControllerBase
 
             return Ok(new
             {
-                message = "Asset başarıyla güncellendi."
+                message = "Asset updated successfully."
             });
         }
         catch (InvalidOperationException ex)
@@ -141,7 +141,7 @@ public class AssetsController : ControllerBase
 
             return Ok(new
             {
-                message = "Asset başarıyla silindi."
+                message = "Asset deleted successfully."
             });
         }
         catch (InvalidOperationException ex)
@@ -164,21 +164,21 @@ public class AssetsController : ControllerBase
         var asset = await _assetService.GetAssetAsync(id);
 
         if (asset == null)
-            return NotFound(new { message = "Asset bulunamadı." });
+            return NotFound(new { message = "Asset not found." });
 
         if (!asset.IsActive)
-            return BadRequest(new { message = "Pasif asset için tarama zamanlanamaz." });
+            return BadRequest(new { message = "Cannot schedule a scan for an inactive asset." });
 
         if (string.IsNullOrWhiteSpace(asset.Url))
-            return BadRequest(new { message = "Bu asset için repository URL tanımlanmamış." });
+            return BadRequest(new { message = "No repository URL is configured for this asset." });
 
-        if (string.IsNullOrWhiteSpace(request.Scanner) ||
-            (!request.Scanner.Equals("Semgrep", StringComparison.OrdinalIgnoreCase) &&
-            !request.Scanner.Equals("Trivy", StringComparison.OrdinalIgnoreCase)))
+        if (!ScannersController.SupportedScanners.Contains(
+                request.Scanner ?? "",
+                StringComparer.OrdinalIgnoreCase))
         {
             return BadRequest(new
             {
-                message = "Desteklenmeyen tarayıcı. Semgrep veya Trivy seçilmelidir."
+                message = "Unsupported scanner. Please select a valid scanner."
             });
         }
 
@@ -194,7 +194,7 @@ public class AssetsController : ControllerBase
             turkeyTimeZone);
 
         if (scheduledUtc <= DateTime.UtcNow)
-            return BadRequest(new { message = "Tarama zamanı gelecekte olmalıdır." });
+            return BadRequest(new { message = "The scheduled scan time must be in the future." });
 
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -227,7 +227,7 @@ public class AssetsController : ControllerBase
 
             return Ok(new
             {
-                message = "Tarama başarıyla zamanlandı.",
+                message = "Scan scheduled successfully.",
                 assetId = id,
                 scheduledScanId = scheduledScan.Id,
                 jobId,
@@ -246,7 +246,7 @@ public class AssetsController : ControllerBase
 
             return StatusCode(500, new
             {
-                message = "Tarama zamanlanamadı.",
+                message = "Failed to schedule the scan.",
                 scheduledScanId = scheduledScan.Id,
                 error = ex.Message
             });
@@ -264,7 +264,7 @@ public class AssetsController : ControllerBase
         {
             return NotFound(new
             {
-                message = "Asset bulunamadı."
+                message = "Asset not found."
             });
         }
 
@@ -308,17 +308,17 @@ public class AssetsController : ControllerBase
         {
             return NotFound(new
             {
-                message = "Asset bulunamadı."
+                message = "Asset not found."
             });
         }
 
-        if (string.IsNullOrWhiteSpace(request.Scanner) ||
-            (!request.Scanner.Equals("Semgrep", StringComparison.OrdinalIgnoreCase) &&
-            !request.Scanner.Equals("Trivy", StringComparison.OrdinalIgnoreCase)))
+        if(!ScannersController.SupportedScanners.Contains(
+                request.Scanner ?? "",
+                StringComparer.OrdinalIgnoreCase))
         {
             return BadRequest(new
             {
-                message = "Desteklenmeyen tarayıcı. Semgrep veya Trivy seçilmelidir."
+                message = "Unsupported scanner. Please select a valid scanner."
             });
         }
 
@@ -326,7 +326,7 @@ public class AssetsController : ControllerBase
         {
             return BadRequest(new
             {
-                message = "Bu asset için repository URL tanımlanmamış."
+                message = "No repository URL is configured for this asset."
             });
         }
 
@@ -357,7 +357,7 @@ public class AssetsController : ControllerBase
 
             return Ok(new
             {
-                message = "Scan başlatıldı.",
+                message = "Scan started.",
                 assetId = id,
                 scanRunId = scanRun.Id,
                 scanner = request.Scanner,
@@ -375,7 +375,7 @@ public class AssetsController : ControllerBase
 
             return StatusCode(500, new
             {
-                message = "Scan başlatılamadı.",
+                message = "Failed to start the scan.",
                 assetId = id,
                 scanRunId = scanRun.Id,
                 status = scanRun.Status,

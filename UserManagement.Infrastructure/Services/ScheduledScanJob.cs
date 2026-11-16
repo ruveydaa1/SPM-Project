@@ -41,7 +41,7 @@ public class ScheduledScanJob
         if (scheduledScan == null)
         {
             _logger.LogWarning(
-                "Zamanlanmış tarama kaydı bulunamadı: {ScheduledScanId}",
+                "Scheduled scan record not found: {ScheduledScanId}",
                 scheduledScanId);
 
             return;
@@ -52,7 +52,7 @@ public class ScheduledScanJob
         if (asset == null)
         {
             scheduledScan.Status = "Failed";
-            scheduledScan.Error = "Asset bulunamadı.";
+            scheduledScan.Error = "Asset not found.";
             scheduledScan.CompletedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
             return;
@@ -61,7 +61,7 @@ public class ScheduledScanJob
         if (!asset.IsActive || string.IsNullOrWhiteSpace(asset.Url))
         {
             scheduledScan.Status = "Failed";
-            scheduledScan.Error = "Asset pasif veya repository URL boş.";
+            scheduledScan.Error = "Asset is inactive or repository URL is empty.";
             scheduledScan.CompletedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
             return;
@@ -69,15 +69,16 @@ public class ScheduledScanJob
 
         if (string.IsNullOrWhiteSpace(scanner) ||
             (!scanner.Equals("Semgrep", StringComparison.OrdinalIgnoreCase) &&
-            !scanner.Equals("Trivy", StringComparison.OrdinalIgnoreCase)))
+            !scanner.Equals("Trivy", StringComparison.OrdinalIgnoreCase )   &&
+            !scanner.Equals("Gitleaks", StringComparison.OrdinalIgnoreCase)))
         {
             scheduledScan.Status = "Failed";
-            scheduledScan.Error = "Desteklenmeyen tarayıcı. Semgrep veya Trivy kullanılmalıdır.";
+            scheduledScan.Error = "Unsupported scanner. Semgrep, Trivy, or Gitleaks must be used.";
             scheduledScan.CompletedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
 
             throw new InvalidOperationException(
-                "Desteklenmeyen tarayıcı. Semgrep veya Trivy kullanılmalıdır.");
+                "Unsupported scanner. Semgrep, Trivy, or Gitleaks must be used.");
         }
 
         scheduledScan.Status = "Running";
@@ -109,7 +110,7 @@ public class ScheduledScanJob
                 scanRun.Id);
 
             _logger.LogInformation(
-                "Zamanlanmış tarama Kafka'ya gönderildi. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
+                "Scheduled scan request sent to Kafka. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
                 asset.Id,
                 scanRun.Id);
         }
@@ -127,7 +128,7 @@ public class ScheduledScanJob
 
             _logger.LogError(
                 ex,
-                "Zamanlanmış tarama Kafka'ya gönderilemedi. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
+                "Failed to send scheduled scan request to Kafka. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
                 asset.Id,
                 scanRun.Id);
 

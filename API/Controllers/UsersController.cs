@@ -37,7 +37,7 @@ public class UsersController : ControllerBase
         {
             return NotFound(new
             {
-                message = "Kullanıcı bulunamadı."
+                message = "User not found."
             });
         }
 
@@ -56,7 +56,7 @@ public class UsersController : ControllerBase
 
             return Ok(new
             {
-                message = "Kullanıcı başarıyla oluşturuldu.",
+                message = "User created successfully.",
                 userId
             });
         }
@@ -82,7 +82,7 @@ public class UsersController : ControllerBase
 
             return Ok(new
             {
-                message = "Kullanıcı başarıyla güncellendi."
+                message = "User updated successfully."
             });
         }
         catch (InvalidOperationException ex)
@@ -105,7 +105,7 @@ public class UsersController : ControllerBase
 
             return Ok(new
             {
-                message = "Kullanıcı başarıyla silindi."
+                message = "User deleted successfully."
             });
         }
         catch (InvalidOperationException ex)

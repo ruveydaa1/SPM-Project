@@ -38,15 +38,15 @@ public class EmailService : IEmailService
         var mail = new MailMessage
         {
             From = new MailAddress(fromEmail, fromName),
-            Subject = "Hesabınız Başarıyla Oluşturuldu",
+            Subject = "Your Account Has Been Created Successfully",
             Body = $"""
-                   Merhaba {firstName} {lastName},
+                   Hello {firstName} {lastName},
 
-                   Hesabınız başarıyla oluşturuldu.
+                   Your account has been created successfully.
 
-                   Artık uygulamaya giriş yaparak hesabınızı kullanabilirsiniz.
+                   You can now log in to the application and start using your account.
 
-                   İyi kullanımlar!
+                   Enjoy using the application!
                    """,
             IsBodyHtml = false
         };
@@ -80,18 +80,18 @@ public class EmailService : IEmailService
         var mail = new MailMessage
         {
             From = new MailAddress(fromEmail, fromName),
-            Subject = "Şifre Sıfırlama",
+            Subject = "Password Reset",
             Body = $"""
-               Merhaba {firstName},
+                    Hello {firstName},
 
-               Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:
+                    Click the link below to reset your password:
 
-               {resetLink}
+                    {resetLink}
 
-               Bu bağlantı belirli bir süre geçerlidir.
+                    This link is valid for a limited time.
 
-               Eğer bu işlemi siz başlatmadıysanız bu e-postayı dikkate almayabilirsiniz.
-               """,
+                    If you did not request this, you can safely ignore this email.
+                    """,
             IsBodyHtml = false
         };
 

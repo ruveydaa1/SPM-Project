@@ -44,7 +44,7 @@ export default function VulnerabilityDetailPage() {
                 if (!response.ok) {
                     setError(
                         data?.message ||
-                            "Vulnerability details could not be retrieved."
+                        "Vulnerability details could not be retrieved."
                     );
                     return;
                 }
@@ -170,8 +170,8 @@ export default function VulnerabilityDetailPage() {
                             </p>
 
                             <h1 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">
-                                {finding.vulnerabilityClass ||
-                                    finding.checkId ||
+                                {finding.message ||
+                                    finding.vulnerabilityClass ||
                                     "Unknown vulnerability"}
                             </h1>
 
@@ -402,8 +402,8 @@ export default function VulnerabilityDetailPage() {
                             <p className="mt-2 text-sm font-medium text-gray-900">
                                 {finding.createdAt
                                     ? new Date(
-                                          finding.createdAt
-                                      ).toLocaleString()
+                                        finding.createdAt
+                                    ).toLocaleString()
                                     : "-"}
                             </p>
                         </div>
@@ -465,8 +465,8 @@ export default function VulnerabilityDetailPage() {
                                 <p className="mt-2 text-sm font-medium text-gray-900">
                                     {finding.scanRun.startedAt
                                         ? new Date(
-                                              finding.scanRun.startedAt
-                                          ).toLocaleString()
+                                            finding.scanRun.startedAt
+                                        ).toLocaleString()
                                         : "-"}
                                 </p>
                             </div>
@@ -479,8 +479,8 @@ export default function VulnerabilityDetailPage() {
                                 <p className="mt-2 text-sm font-medium text-gray-900">
                                     {finding.scanRun.completedAt
                                         ? new Date(
-                                              finding.scanRun.completedAt
-                                          ).toLocaleString()
+                                            finding.scanRun.completedAt
+                                        ).toLocaleString()
                                         : "-"}
                                 </p>
                             </div>

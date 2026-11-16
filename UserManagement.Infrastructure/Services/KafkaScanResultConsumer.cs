@@ -58,7 +58,7 @@ public class KafkaScanResultConsumer : BackgroundService
         consumer.Subscribe(topic);
 
         _logger.LogInformation(
-            "Kafka scan result consumer başlatıldı. Topic: {Topic}",
+            "Kafka scan result consumer started. Topic: {Topic}",
             topic);
 
         try
@@ -83,13 +83,13 @@ public class KafkaScanResultConsumer : BackgroundService
                     if (scanResult == null)
                     {
                         _logger.LogWarning(
-                            "Kafka scan result mesajı çözümlenemedi.");
+                            "Failed to deserialize Kafka scan result message.");
 
                         continue;
                     }
 
                     _logger.LogInformation(
-                        "Scan sonucu alındı. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Success: {Success}",
+                        "Scan result received. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Success: {Success}",
                         scanResult.AssetId,
                         scanResult.ScanRunId,
                         scanResult.Success);
@@ -115,7 +115,7 @@ public class KafkaScanResultConsumer : BackgroundService
                     if (scanRun == null)
                     {
                         _logger.LogWarning(
-                            "ScanRun bulunamadı. ScanRunId: {ScanRunId}",
+                            "Scan run not found. ScanRunId: {ScanRunId}",
                             scanResult.ScanRunId);
 
                         continue;
@@ -125,7 +125,7 @@ public class KafkaScanResultConsumer : BackgroundService
                         .FirstOrDefaultAsync(s => s.ScanRunId == scanRun.Id);
 
                     _logger.LogInformation(
-                        "ScheduledScan eşleşmesi: ScanRunId={ScanRunId}, ScheduledScanId={ScheduledScanId}",
+                        "Scheduled scan match: ScanRunId={ScanRunId}, ScheduledScanId={ScheduledScanId}",
                         scanRun.Id,
                         scheduledScan?.Id);
 
@@ -141,7 +141,7 @@ public class KafkaScanResultConsumer : BackgroundService
                             .SaveChangesAsync();
 
                         _logger.LogInformation(
-                            "ScanRun Completed durumuna getirildi. ScanRunId: {ScanRunId}",
+                            "ScanRun status updated to Completed. ScanRunId: {ScanRunId}",
                             scanRun.Id);
 
                         if (scanResult.Findings.Count > 0)
@@ -202,7 +202,7 @@ public class KafkaScanResultConsumer : BackgroundService
                                 .SaveChangesAsync();
 
                             _logger.LogInformation(
-                                "{Count} adet finding veritabanına kaydedildi. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
+                                "{Count} findings saved to the database. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
                                 findings.Count,
                                 scanResult.AssetId,
                                 scanResult.ScanRunId);
@@ -210,7 +210,7 @@ public class KafkaScanResultConsumer : BackgroundService
                         else
                         {
                             _logger.LogInformation(
-                                "Scan sonucunda herhangi bir finding bulunamadı. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
+                                "No findings found in the scan result. AssetId: {AssetId}, ScanRunId: {ScanRunId}",
                                 scanResult.AssetId,
                                 scanResult.ScanRunId);
                         }
@@ -245,7 +245,7 @@ public class KafkaScanResultConsumer : BackgroundService
                         }
 
                         _logger.LogWarning(
-                            "Asset scan başarısız oldu. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Error: {Error}",
+                            "Asset scan failed. AssetId: {AssetId}, ScanRunId: {ScanRunId}, Error: {Error}",
                             scanResult.AssetId,
                             scanResult.ScanRunId,
                             scanResult.Error);
@@ -259,13 +259,13 @@ public class KafkaScanResultConsumer : BackgroundService
                 {
                     _logger.LogError(
                         ex,
-                        "Kafka scan result mesajı tüketilirken hata oluştu.");
+                        "An error occurred while consuming the Kafka scan result message.");
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(
                         ex,
-                        "Scan result işlenirken beklenmeyen hata oluştu.");
+                        "An unexpected error occurred while processing the scan result.");
                 }
             }
         }
@@ -278,7 +278,7 @@ public class KafkaScanResultConsumer : BackgroundService
             consumer.Close();
 
             _logger.LogInformation(
-                "Kafka scan result consumer durduruldu.");
+                "Kafka scan result consumer stopped.");
         }
     }
 }
