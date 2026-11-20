@@ -14,7 +14,8 @@ public class ScannersController : ControllerBase
         {
             "Semgrep",
             "Trivy",
-            "Gitleaks"
+            "Gitleaks",
+            "SonarQube"
         });
 
     [HttpGet]

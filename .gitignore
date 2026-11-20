@@ -27,3 +27,9 @@ frontend/out/
 # OS
 .DS_Store
 Thumbs.db
+
+# SonarQube Docker configuration (contains database password)
+sonarqube-compose.yaml
+
+# SonarQube analysis cache and generated files
+.sonarqube/
