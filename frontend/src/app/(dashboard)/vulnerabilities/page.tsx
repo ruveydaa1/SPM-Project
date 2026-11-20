@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -111,9 +112,15 @@ export default function VulnerabilitiesPage() {
     const getSeverityClass = (severity: string) => {
         switch (severity?.toLowerCase()) {
             case "error":
+            case "blocker":
+            case "critical":
                 return "bg-red-500 text-white";
 
+            case "major":
+                return "bg-orange-500 text-white";
+
             case "warning":
+            case "minor":
                 return "bg-yellow-400 text-gray-900";
 
             case "info":
@@ -122,6 +129,16 @@ export default function VulnerabilitiesPage() {
             default:
                 return "bg-gray-400 text-white";
         }
+    };
+
+    const getFindingTitle = (finding: any) => {
+        return (
+            finding.title ||
+            finding.message ||
+            finding.vulnerabilityClass ||
+            finding.checkId ||
+            "Unknown vulnerability"
+        );
     };
 
     return (
@@ -187,71 +204,78 @@ export default function VulnerabilitiesPage() {
                             </thead>
 
                             <tbody>
-                                {findings.map((finding) => (
-                                    <tr
-                                        key={finding.id}
-                                        className="border-b border-gray-100 last:border-b-0"
-                                    >
-                                        {/* Severity */}
-                                        <td className="px-6 py-4">
-                                            <span
-                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getSeverityClass(
-                                                    finding.severity
-                                                )}`}
-                                            >
-                                                {finding.severity || "Unknown"}
-                                            </span>
-                                        </td>
+                                {findings.map((finding) => {
+                                    const findingTitle = getFindingTitle(finding);
 
-                                        {/* Vulnerability */}
-                                        <td className="max-w-md px-6 py-4">
-                                            <p className="font-medium text-gray-900">
-                                                {finding.scanRun?.scanner?.toLowerCase() === "gitleaks"
-                                                    ? finding.message || "Unknown vulnerability"
-                                                    : finding.vulnerabilityClass ||
-                                                    finding.checkId ||
-                                                    "Unknown vulnerability"}
-                                            </p>
+                                    return (
+                                        <tr
+                                            key={finding.id}
+                                            className="border-b border-gray-100 last:border-b-0"
+                                        >
+                                            {/* Severity */}
+                                            <td className="px-6 py-4">
+                                                <span
+                                                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getSeverityClass(
+                                                        finding.severity
+                                                    )}`}
+                                                >
+                                                    {finding.severity || "Unknown"}
+                                                </span>
+                                            </td>
 
-                                            {finding.message && (
-                                                <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-500">
-                                                    {finding.message}
+                                            {/* Vulnerability */}
+                                            <td className="max-w-md px-6 py-4">
+                                                <p className="font-medium text-gray-900">
+                                                    {findingTitle}
                                                 </p>
-                                            )}
-                                        </td>
 
-                                        {/* Asset */}
-                                        <td className="px-6 py-4 text-sm text-gray-700">
-                                            {finding.asset?.name ||
-                                                finding.assetId ||
-                                                "-"}
-                                        </td>
+                                                {finding.message &&
+                                                    finding.message !== findingTitle && (
+                                                        <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-500">
+                                                            {finding.message}
+                                                        </p>
+                                                    )}
 
-                                        {/* CWE */}
-                                        <td className="px-6 py-4 text-sm text-gray-700">
-                                            {finding.cwe || "-"}
-                                        </td>
+                                                {finding.checkId && (
+                                                    <p className="mt-1 text-xs text-gray-400">
+                                                        {finding.checkId}
+                                                    </p>
+                                                )}
+                                            </td>
 
-                                        {/* Detected At */}
-                                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                            {finding.createdAt
-                                                ? new Date(
-                                                    finding.createdAt
-                                                ).toLocaleString()
-                                                : "-"}
-                                        </td>
+                                            {/* Asset */}
+                                            <td className="px-6 py-4 text-sm text-gray-700">
+                                                {finding.asset?.name ||
+                                                    finding.assetId ||
+                                                    "-"}
+                                            </td>
 
-                                        {/* Action */}
-                                        <td className="whitespace-nowrap px-6 py-4 text-right">
-                                            <Link
-                                                href={`/vulnerabilities/${finding.id}`}
-                                                className="text-sm font-medium text-gray-700 hover:text-gray-900 hover:underline"
-                                            >
-                                                View Details
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
+                                            {/* CWE */}
+                                            <td className="px-6 py-4 text-sm text-gray-700">
+                                                {finding.cwe || "-"}
+                                            </td>
+
+                                            {/* Detected At */}
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                                {finding.createdAt
+                                                    ? new Date(
+                                                        finding.createdAt
+                                                    ).toLocaleString()
+                                                    : "-"}
+                                            </td>
+
+                                            {/* Action */}
+                                            <td className="whitespace-nowrap px-6 py-4 text-right">
+                                                <Link
+                                                    href={`/vulnerabilities/${finding.id}`}
+                                                    className="text-sm font-medium text-gray-700 hover:text-gray-900 hover:underline"
+                                                >
+                                                    View Details
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

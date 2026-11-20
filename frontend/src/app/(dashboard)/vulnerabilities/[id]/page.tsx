@@ -128,9 +128,15 @@ export default function VulnerabilityDetailPage() {
     const getSeverityClass = (severity: string) => {
         switch (severity?.toLowerCase()) {
             case "error":
+            case "blocker":
+            case "critical":
                 return "bg-red-100 text-red-700 border-red-200";
 
+            case "major":
+                return "bg-orange-100 text-orange-700 border-orange-200";
+
             case "warning":
+            case "minor":
                 return "bg-yellow-100 text-yellow-700 border-yellow-200";
 
             case "info":
@@ -170,8 +176,10 @@ export default function VulnerabilityDetailPage() {
                             </p>
 
                             <h1 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">
-                                {finding.message ||
+                                {finding.title ||
+                                    finding.message ||
                                     finding.vulnerabilityClass ||
+                                    finding.checkId ||
                                     "Unknown vulnerability"}
                             </h1>
 
@@ -281,7 +289,7 @@ export default function VulnerabilityDetailPage() {
                                 </p>
 
                                 <p className="mt-2 text-sm font-medium text-gray-900">
-                                    {finding.vulnerabilityClass || "-"}
+                                    {finding.vulnerabilityClass || finding.checkId || "-"}
                                 </p>
                             </div>
                         </div>

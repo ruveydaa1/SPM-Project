@@ -70,15 +70,16 @@ public class ScheduledScanJob
         if (string.IsNullOrWhiteSpace(scanner) ||
             (!scanner.Equals("Semgrep", StringComparison.OrdinalIgnoreCase) &&
             !scanner.Equals("Trivy", StringComparison.OrdinalIgnoreCase )   &&
-            !scanner.Equals("Gitleaks", StringComparison.OrdinalIgnoreCase)))
+            !scanner.Equals("Gitleaks", StringComparison.OrdinalIgnoreCase )   &&
+            !scanner.Equals("SonarQube", StringComparison.OrdinalIgnoreCase)))
         {
             scheduledScan.Status = "Failed";
-            scheduledScan.Error = "Unsupported scanner. Semgrep, Trivy, or Gitleaks must be used.";
+            scheduledScan.Error = "Unsupported scanner. Please select a valid scanner.";
             scheduledScan.CompletedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
 
             throw new InvalidOperationException(
-                "Unsupported scanner. Semgrep, Trivy, or Gitleaks must be used.");
+                "Unsupported scanner. Please select a valid scanner.");
         }
 
         scheduledScan.Status = "Running";
