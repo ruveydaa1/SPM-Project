@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UserManagement.Application.DTOs.Scan;
-using UserManagement.Application.Interfaces;
-using UserManagement.Infrastructure.Persistence;
+using Application.DTOs.Scan;
+using Application.Interfaces;
+using Infrastructure.Persistence;
 
 namespace UserManagement.Controllers;
 
@@ -196,7 +196,7 @@ public class ScanRunController : ControllerBase
             {
                 var findings =
                     scanResult.Findings
-                        .Select(f => new UserManagement.Domain.Entities.Finding
+                        .Select(f => new Domain.Entities.Finding
                         {
                             AssetId = scanResult.AssetId,
                             ScanRunId = scanResult.ScanRunId,

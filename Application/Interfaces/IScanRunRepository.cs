@@ -1,0 +1,16 @@
+﻿using Domain.Entities;
+
+namespace Application.Interfaces;
+
+public interface IScanRunRepository
+{
+    Task<List<ScanRun>> GetAllAsync();
+
+    Task<ScanRun?> GetByIdAsync(int id);
+
+    Task<List<ScanRun>> GetByAssetIdAsync(int assetId);
+
+    Task AddAsync(ScanRun scanRun);
+
+    Task SaveChangesAsync();
+}

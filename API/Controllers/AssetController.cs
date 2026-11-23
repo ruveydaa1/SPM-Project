@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UserManagement.Application.DTOs.Assets;
-using UserManagement.Application.DTOs.Scan;
-using UserManagement.Application.Interfaces;
-using UserManagement.Domain.Entities;
-using UserManagement.Infrastructure.Services;
-using UserManagement.Infrastructure.Persistence;
+using Application.DTOs.Assets;
+using Application.DTOs.Scan;
+using Application.Interfaces;
+using Domain.Entities;
+using Infrastructure.Services;
+using Infrastructure.Persistence;
 using System.Security.Claims;
 using Hangfire;
 

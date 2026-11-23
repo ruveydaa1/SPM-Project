@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UserManagement.Application.DTOs;
-using UserManagement.Application.Interfaces;
+using Application.DTOs;
+using Application.Interfaces;
 
 namespace UserManagement.API.Controllers;
 

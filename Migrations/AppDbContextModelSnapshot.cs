@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using UserManagement.Infrastructure.Persistence;
+using Infrastructure.Persistence;
 
 #nullable disable
 
@@ -22,7 +22,7 @@ namespace UserManagement.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.Asset", b =>
+            modelBuilder.Entity("Domain.Entities.Asset", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,7 +74,7 @@ namespace UserManagement.Migrations
                     b.ToTable("assets", (string)null);
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.Finding", b =>
+            modelBuilder.Entity("Domain.Entities.Finding", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -242,7 +242,7 @@ namespace UserManagement.Migrations
                     b.ToTable("findings", (string)null);
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.Role", b =>
+            modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -265,7 +265,7 @@ namespace UserManagement.Migrations
                     b.ToTable("roles", (string)null);
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.ScanRun", b =>
+            modelBuilder.Entity("Domain.Entities.ScanRun", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -323,7 +323,7 @@ namespace UserManagement.Migrations
                     b.ToTable("scan_runs", (string)null);
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.ScheduledScan", b =>
+            modelBuilder.Entity("Domain.Entities.ScheduledScan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -389,7 +389,7 @@ namespace UserManagement.Migrations
                     b.ToTable("scheduled_scans", (string)null);
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.User", b =>
+            modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -452,7 +452,7 @@ namespace UserManagement.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.UserRole", b =>
+            modelBuilder.Entity("Domain.Entities.UserRole", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
@@ -469,15 +469,15 @@ namespace UserManagement.Migrations
                     b.ToTable("user_roles", (string)null);
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.Finding", b =>
+            modelBuilder.Entity("Domain.Entities.Finding", b =>
                 {
-                    b.HasOne("UserManagement.Domain.Entities.Asset", "Asset")
+                    b.HasOne("Domain.Entities.Asset", "Asset")
                         .WithMany()
                         .HasForeignKey("AssetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UserManagement.Domain.Entities.ScanRun", "ScanRun")
+                    b.HasOne("Domain.Entities.ScanRun", "ScanRun")
                         .WithMany("Findings")
                         .HasForeignKey("ScanRunId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -488,15 +488,15 @@ namespace UserManagement.Migrations
                     b.Navigation("ScanRun");
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.ScanRun", b =>
+            modelBuilder.Entity("Domain.Entities.ScanRun", b =>
                 {
-                    b.HasOne("UserManagement.Domain.Entities.Asset", "Asset")
+                    b.HasOne("Domain.Entities.Asset", "Asset")
                         .WithMany()
                         .HasForeignKey("AssetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UserManagement.Domain.Entities.User", "StartedByUser")
+                    b.HasOne("Domain.Entities.User", "StartedByUser")
                         .WithMany()
                         .HasForeignKey("StartedByUserId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -506,20 +506,20 @@ namespace UserManagement.Migrations
                     b.Navigation("StartedByUser");
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.ScheduledScan", b =>
+            modelBuilder.Entity("Domain.Entities.ScheduledScan", b =>
                 {
-                    b.HasOne("UserManagement.Domain.Entities.Asset", "Asset")
+                    b.HasOne("Domain.Entities.Asset", "Asset")
                         .WithMany()
                         .HasForeignKey("AssetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UserManagement.Domain.Entities.ScanRun", "ScanRun")
+                    b.HasOne("Domain.Entities.ScanRun", "ScanRun")
                         .WithMany()
                         .HasForeignKey("ScanRunId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("UserManagement.Domain.Entities.User", "ScheduledByUser")
+                    b.HasOne("Domain.Entities.User", "ScheduledByUser")
                         .WithMany()
                         .HasForeignKey("ScheduledByUserId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -531,15 +531,15 @@ namespace UserManagement.Migrations
                     b.Navigation("ScheduledByUser");
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.UserRole", b =>
+            modelBuilder.Entity("Domain.Entities.UserRole", b =>
                 {
-                    b.HasOne("UserManagement.Domain.Entities.Role", "Role")
+                    b.HasOne("Domain.Entities.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UserManagement.Domain.Entities.User", "User")
+                    b.HasOne("Domain.Entities.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -550,17 +550,17 @@ namespace UserManagement.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.Role", b =>
+            modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.ScanRun", b =>
+            modelBuilder.Entity("Domain.Entities.ScanRun", b =>
                 {
                     b.Navigation("Findings");
                 });
 
-            modelBuilder.Entity("UserManagement.Domain.Entities.User", b =>
+            modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("UserRoles");
                 });
