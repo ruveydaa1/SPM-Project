@@ -1,19 +1,19 @@
-using UserManagement.Application.Interfaces;
-using UserManagement.Application.Services;
-using UserManagement.Infrastructure.Repositories;
-using UserManagement.Infrastructure.Services;
+﻿using Application.Interfaces;
+using Application.Services;
+using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using UserManagement.Infrastructure.Persistence;
-using UserManagement.Infrastructure.Hubs;
+using Infrastructure.Persistence;
+using Infrastructure.Hubs;
 using Hangfire;
 using Hangfire.PostgreSql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Hangfire - PostgreSQL üzerinden zamanlanmış görevler
+// Hangfire - PostgreSQL Ã¼zerinden zamanlanmÄ±ÅŸ gÃ¶revler
 builder.Services.AddHangfire(configuration =>
     configuration
         .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -28,12 +28,12 @@ builder.Services.AddHangfire(configuration =>
 
 builder.Services.AddHangfireServer();
 
-// PostgreSQL bağlantısı
+// PostgreSQL baÄŸlantÄ±sÄ±
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         npgsqlOptions =>
-            npgsqlOptions.MigrationsAssembly("UserManagement")
+            npgsqlOptions.MigrationsAssembly("SPM")
     ));
 
 
@@ -48,6 +48,7 @@ builder.Services.AddScoped<IFindingService, FindingService>();
 builder.Services.AddScoped<IFindingRepository, FindingRepository>();
 builder.Services.AddScoped<IScanRunRepository, ScanRunRepository>();
 builder.Services.AddScoped<IScanRunService, ScanRunService>();
+builder.Services.AddScoped<ISarifExportService, SarifExportService>();
 
 
 builder.Services.AddSingleton<KafkaScanProducer>();
@@ -91,7 +92,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 await context.Response.WriteAsJsonAsync(new
                 {
-                    message = "Bu işlemi gerçekleştirmek için giriş yapmanız gerekiyor."
+                    message = "Bu iÅŸlemi gerÃ§ekleÅŸtirmek iÃ§in giriÅŸ yapmanÄ±z gerekiyor."
                 });
             },
 
@@ -102,7 +103,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 await context.Response.WriteAsJsonAsync(new
                 {
-                    message = "Bu işlemi gerçekleştirmek için yetkiniz yok."
+                    message = "Bu iÅŸlemi gerÃ§ekleÅŸtirmek iÃ§in yetkiniz yok."
                 });
             }
         };
@@ -151,7 +152,7 @@ app.UseHttpsRedirection();
 
 app.UseHangfireDashboard("/hangfire");
 
-// Authentication → Authorization sırası önemli
+// Authentication â†’ Authorization sÄ±rasÄ± Ã¶nemli
 app.UseAuthentication();
 app.UseAuthorization();
 

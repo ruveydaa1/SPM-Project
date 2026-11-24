@@ -10,6 +10,8 @@ export default function ScanDetailPage() {
     const router = useRouter();
     const params = useParams();
     const { user } = useAuth();
+    const [downloadingSarif, setDownloadingSarif] = useState(false);
+    const [sarifError, setSarifError] = useState("");
 
     const [scan, setScan] = useState<ScanRun | null>(null);
     const [loading, setLoading] = useState(true);
@@ -89,6 +91,59 @@ export default function ScanDetailPage() {
         }
     };
 
+    const downloadSarif = async () => {
+        try {
+            setDownloadingSarif(true);
+            setSarifError("");
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                setSarifError("Authentication token not found.");
+                return;
+            }
+
+            const response = await fetch(
+                `http://localhost:5245/api/scan-runs/${params.id}/sarif`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    cache: "no-store",
+                }
+            );
+
+            if (!response.ok) {
+                const data = await response.json();
+
+                setSarifError(
+                    data?.message || "SARIF report could not be downloaded."
+                );
+
+                return;
+            }
+
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = downloadUrl;
+            link.download = `scan-${params.id}.sarif`;
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error("SARIF download error:", error);
+            setSarifError("An error occurred while downloading the SARIF report.");
+        } finally {
+            setDownloadingSarif(false);
+        }
+    };
+
     useEffect(() => {
         if (user && user.roles?.[0] !== "User" && params.id) {
             fetchScan();
@@ -163,6 +218,32 @@ export default function ScanDetailPage() {
                 <p className="mt-2 text-sm text-gray-500">
                     Detailed information about this scan.
                 </p>
+
+                {scan.status.toLowerCase() === "completed" && (
+                    <div className="mt-4">
+                        <button
+                            onClick={downloadSarif}
+                            disabled={downloadingSarif}
+                            className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {downloadingSarif ? (
+                                "Downloading..."
+                            ) : (
+                                <>
+                                    <span>↓</span>
+                                    Download SARIF
+                                </>
+                            )}
+                        </button>
+
+                        {sarifError && (
+                            <p className="mt-2 text-sm text-red-600">
+                                {sarifError}
+                            </p>
+                        )}
+                    </div>
+                )}
+                
             </div>
 
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -176,7 +257,7 @@ export default function ScanDetailPage() {
                             #{scan.assetId}
                         </p>
                     </div>
-                    
+
                     <div>
                         <p className="text-sm text-gray-400">
                             Started By
@@ -194,7 +275,7 @@ export default function ScanDetailPage() {
                             {scan.startedByUserRole || "N/A"}
                         </p>
                     </div>
-                    
+
                     <div>
                         <p className="text-sm text-gray-400">
                             Scanner
@@ -212,12 +293,12 @@ export default function ScanDetailPage() {
 
                         <span
                             className={`mt-1 inline-block rounded-full px-3 py-1 text-xs font-medium ${scan.status.toLowerCase() ===
-                                    "completed"
-                                    ? "bg-green-100 text-green-700"
-                                    : scan.status.toLowerCase() ===
-                                        "failed"
-                                        ? "bg-red-100 text-red-700"
-                                        : "bg-yellow-100 text-yellow-700"
+                                "completed"
+                                ? "bg-green-100 text-green-700"
+                                : scan.status.toLowerCase() ===
+                                    "failed"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-yellow-100 text-yellow-700"
                                 }`}
                         >
                             {scan.status}
@@ -358,15 +439,15 @@ export default function ScanDetailPage() {
                                                     <td className="px-6 py-4">
                                                         <span
                                                             className={`rounded-full px-3 py-1 text-xs font-medium ${finding.severity?.toLowerCase() ===
-                                                                    "high"
-                                                                    ? "bg-red-100 text-red-700"
+                                                                "high"
+                                                                ? "bg-red-100 text-red-700"
+                                                                : finding.severity?.toLowerCase() ===
+                                                                    "medium"
+                                                                    ? "bg-yellow-100 text-yellow-700"
                                                                     : finding.severity?.toLowerCase() ===
-                                                                        "medium"
-                                                                        ? "bg-yellow-100 text-yellow-700"
-                                                                        : finding.severity?.toLowerCase() ===
-                                                                            "low"
-                                                                            ? "bg-blue-100 text-blue-700"
-                                                                            : "bg-gray-100 text-gray-700"
+                                                                        "low"
+                                                                        ? "bg-blue-100 text-blue-700"
+                                                                        : "bg-gray-100 text-gray-700"
                                                                 }`}
                                                         >
                                                             {

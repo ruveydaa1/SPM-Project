@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UserManagement.Application.Interfaces;
+using Application.Interfaces;
 
 namespace UserManagement.Controllers;
 
@@ -16,7 +16,7 @@ public class FindingController : ControllerBase
         _findingService = findingService;
     }
 
-    // Sistemdeki tüm vulnerability finding'lerini getirir.
+    // Sistemdeki tÃ¼m vulnerability finding'lerini getirir.
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -36,7 +36,7 @@ public class FindingController : ControllerBase
         return Ok(findings);
     }
 
-    // Belirli bir finding'i ID'sine göre getirir.
+    // Belirli bir finding'i ID'sine gÃ¶re getirir.
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
