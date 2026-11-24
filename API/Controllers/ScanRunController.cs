@@ -14,6 +14,7 @@ public class ScanRunController : ControllerBase
 {
     private readonly IScanRunRepository _scanRunRepository;
     private readonly IFindingRepository _findingRepository;
+    private readonly ISarifExportService _sarifExportService;
     private readonly ILogger<ScanRunController> _logger;
     private readonly AppDbContext _dbContext;
 
@@ -22,11 +23,13 @@ public class ScanRunController : ControllerBase
         IScanRunRepository scanRunRepository,
         IFindingRepository findingRepository,
         ILogger<ScanRunController> logger,
+        ISarifExportService sarifExportService,
         AppDbContext dbContext)
     {
         _scanRunRepository = scanRunRepository;
         _findingRepository = findingRepository;
         _logger = logger;
+        _sarifExportService = sarifExportService;
         _dbContext = dbContext;
     }
     //butun tarama kayitlarini ve bulgularini getirir
@@ -148,6 +151,53 @@ public class ScanRunController : ControllerBase
 
         return Ok(result);
     }
+
+    // GET: api/scan-runs/1/sarif
+    // Tamamlanmış taramanın bulgularını SARIF formatında indirir.
+    [HttpGet("{id:int}/sarif")]
+    public async Task<IActionResult> DownloadSarif(int id)
+    {
+        try
+        {
+            var sarifJson =
+                await _sarifExportService.GenerateSarifAsync(id);
+
+            if (sarifJson == null)
+            {
+                return NotFound(new
+                {
+                    message = "Scan run not found."
+                });
+            }
+
+            var fileBytes = System.Text.Encoding.UTF8.GetBytes(sarifJson);
+
+            return File(
+                fileBytes,
+                "application/sarif+json",
+                $"scan-{id}.sarif");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "SARIF export failed. ScanRunId: {ScanRunId}",
+                id);
+
+            return StatusCode(500, new
+            {
+                message = "An error occurred while generating the SARIF report."
+            });
+        }
+    }
+    
     //gelen sonucu isler tarama durumunu gunceller ve bulgulari kaydeder
     // POST: api/scan-runs/result
     [HttpPost("result")]

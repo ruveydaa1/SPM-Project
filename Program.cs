@@ -48,6 +48,7 @@ builder.Services.AddScoped<IFindingService, FindingService>();
 builder.Services.AddScoped<IFindingRepository, FindingRepository>();
 builder.Services.AddScoped<IScanRunRepository, ScanRunRepository>();
 builder.Services.AddScoped<IScanRunService, ScanRunService>();
+builder.Services.AddScoped<ISarifExportService, SarifExportService>();
 
 
 builder.Services.AddSingleton<KafkaScanProducer>();
