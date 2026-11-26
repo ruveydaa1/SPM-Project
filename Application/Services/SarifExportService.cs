@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Application.Interfaces;
 using Domain.Entities;
+using System.Text.Json.Serialization;
 
 namespace Application.Services;
 
@@ -9,6 +10,13 @@ public class SarifExportService : ISarifExportService
 {
     private const string SarifSchema =
         "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json";
+
+    private static readonly JsonSerializerOptions SarifJsonOptions = new()
+    {
+        WriteIndented = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+
+    };
 
     private readonly IScanRunRepository _scanRunRepository;
 
@@ -145,11 +153,8 @@ public class SarifExportService : ISarifExportService
 
         return JsonSerializer.Serialize(
             sarifOutput,
-            new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            });
+
+            SarifJsonOptions);
     }
 
     private static string GetRuleId(Finding finding)
