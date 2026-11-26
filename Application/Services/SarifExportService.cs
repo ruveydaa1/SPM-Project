@@ -1,4 +1,3 @@
-
 using System.Text.Json;
 using Application.Interfaces;
 using Domain.Entities;
@@ -72,10 +71,10 @@ public class SarifExportService : ISarifExportService
                 ["message"] = new
                 {
                     text = !string.IsNullOrWhiteSpace(finding.Message)
-                        ? finding.Message
+                        ? finding.Message.Trim()
                         : !string.IsNullOrWhiteSpace(finding.Title)
-                            ? finding.Title
-                            : "Security finding"
+                            ? finding.Title.Trim()
+                            : $"{scanRun.Scanner} security finding"
                 }
             };
 
@@ -124,7 +123,9 @@ public class SarifExportService : ISarifExportService
                         {
                             name = string.IsNullOrWhiteSpace(scanRun.Scanner)
                                 ? "SPM"
-                                : scanRun.Scanner,
+                                : scanRun.Scanner.Trim(),
+                            version = "1.0.0",
+                            informationUri = "https://github.com/ruveydaa1/SPM-Project",
                             rules
                         }
                     },
@@ -163,13 +164,20 @@ public class SarifExportService : ISarifExportService
             "blocker" or "critical" or "high" or "error"
                 => "error",
 
-            "major" or "medium" or "moderate" or "warning"
+            "major" or "medium" or "warning"
                 => "warning",
 
-            "minor" or "low" or "info" or "informational" or "note"
+            "moderate"
+                => "warning",
+
+            "minor" or "low" or "note"
                 => "note",
 
-            _ => "none"
+            "info" or "informational"
+                => "note",
+
+            // Bilinmeyen severity değerleri gözden kaçmasın diye warning olarak işaretlenir.
+            _ => "warning"
         };
     }
 
