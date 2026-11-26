@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Application.Interfaces;
 using Domain.Entities;
 
@@ -146,7 +147,8 @@ public class SarifExportService : ISarifExportService
             sarifOutput,
             new JsonSerializerOptions
             {
-                WriteIndented = true
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             });
     }
 
