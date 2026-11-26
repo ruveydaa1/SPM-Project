@@ -10,6 +10,11 @@ public class SarifExportService : ISarifExportService
     private const string SarifSchema =
         "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json";
 
+    private static readonly JsonSerializerOptions SarifJsonOptions = new()
+    {
+        WriteIndented = true
+    };
+
     private readonly IScanRunRepository _scanRunRepository;
 
     public SarifExportService(IScanRunRepository scanRunRepository)
@@ -143,10 +148,7 @@ public class SarifExportService : ISarifExportService
 
         return JsonSerializer.Serialize(
             sarifOutput,
-            new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
+            SarifJsonOptions);
     }
 
     private static string GetRuleId(Finding finding)
