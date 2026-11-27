@@ -34,9 +34,9 @@ jobs:
         run: |
           semgrep scan \
             --config p/security-audit \
+            --config p/javascript \
             --sarif \
             --output semgrep.sarif \
-            --metrics=off \
             .
 
       - name: Check High/Critical Semgrep findings
