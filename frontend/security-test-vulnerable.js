@@ -1,3 +1,3 @@
-const userInput = process.argv[2];
+const userInput = process.argv[3];
 
 eval(userInput);
