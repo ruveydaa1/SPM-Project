@@ -34,6 +34,7 @@ jobs:
         run: |
           semgrep scan \
             --config p/security-audit \
+            --config p/csharp \
             --sarif \
             --output semgrep.sarif \
             --metrics=off \
