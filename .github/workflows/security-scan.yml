@@ -1,3 +1,4 @@
+
 name: Security Scans
 
 on:
@@ -39,6 +40,28 @@ jobs:
             --output semgrep.sarif \
             --metrics=off \
             .
+
+      - name: Debug Semgrep SARIF
+        run: |
+          python - <<'PY'
+          import json
+
+          with open("semgrep.sarif", encoding="utf-8") as file:
+              sarif = json.load(file)
+
+          for run in sarif.get("runs", []):
+              rules = {
+                  rule.get("id"): rule
+                  for rule in run.get("tool", {}).get("driver", {}).get("rules", [])
+              }
+
+              for result in run.get("results", []):
+                  rule = rules.get(result.get("ruleId"), {})
+                  print("RULE ID:", result.get("ruleId"))
+                  print("RESULT LEVEL:", result.get("level"))
+                  print("RESULT PROPERTIES:", json.dumps(result.get("properties", {}), indent=2))
+                  print("RULE PROPERTIES:", json.dumps(rule.get("properties", {}), indent=2))
+          PY
 
       - name: Check High/Critical Semgrep findings
         run: |
