@@ -40,6 +40,26 @@ jobs:
             --metrics=off \
             .
 
+            - name: Debug Semgrep SARIF
+             run: |
+          python - <<'PY'
+          import json
+
+          with open("semgrep.sarif", encoding="utf-8") as file:
+              sarif = json.load(file)
+
+          for run in sarif.get("runs", []):
+              rules = {
+                  rule.get("id"): rule
+                  for rule in run.get("tool", {}).get("driver", {}).get("rules", [])
+              }
+
+              for result in run.get("results", []):
+                  rule = rules.get(result.get("ruleId"), {})
+                  print("RULE ID:", result.get("ruleId"))
+                  print("RESULT:", json.dumps(result, indent=2))
+                  print("RULE:", json.dumps(rule, indent=2))
+          PY
       - name: Check High/Critical Semgrep findings
         run: |
           python - <<'PY'
