@@ -41,29 +41,7 @@ jobs:
             --metrics=off \
             .
 
-      - name: Debug Semgrep SARIF
-        run: |
-          python - <<'PY'
-          import json
-
-          with open("semgrep.sarif", encoding="utf-8") as file:
-              sarif = json.load(file)
-
-          for run in sarif.get("runs", []):
-              rules = {
-                  rule.get("id"): rule
-                  for rule in run.get("tool", {}).get("driver", {}).get("rules", [])
-              }
-
-              for result in run.get("results", []):
-                  rule = rules.get(result.get("ruleId"), {})
-                  print("RULE ID:", result.get("ruleId"))
-                  print("RESULT LEVEL:", result.get("level"))
-                  print("RESULT PROPERTIES:", json.dumps(result.get("properties", {}), indent=2))
-                  print("RULE PROPERTIES:", json.dumps(rule.get("properties", {}), indent=2))
-          PY
-
-      - name: Check High/Critical Semgrep findings
+      - name: Check High/Critical and SQL Injection findings
         run: |
           python - <<'PY'
           import json
@@ -81,7 +59,9 @@ jobs:
               }
 
               for result in run.get("results", []):
-                  rule = rules.get(result.get("ruleId"), {})
+                  rule_id = result.get("ruleId", "Unknown rule")
+                  rule = rules.get(rule_id, {})
+
                   result_properties = result.get("properties", {})
                   rule_properties = rule.get("properties", {})
 
@@ -96,16 +76,31 @@ jobs:
                   except (TypeError, ValueError):
                       score = 0
 
-                  if result.get("level") == "error" or score >= 7:
-                      blocking.append(result.get("ruleId", "Unknown rule"))
+                  tags = rule_properties.get("tags", [])
+
+                  is_high_critical = (
+                      result.get("level") == "error"
+                      or score >= 7
+                  )
+
+                  is_sql_injection = (
+                      any(
+                          isinstance(tag, str) and tag.startswith("CWE-89:")
+                          for tag in tags
+                      )
+                      or "sqli" in rule_id.lower()
+                  )
+
+                  if is_high_critical or is_sql_injection:
+                      blocking.append(rule_id)
 
           if blocking:
-              print("High/Critical seviyesinde Semgrep bulguları:")
+              print("Blocking Semgrep bulguları bulundu:")
               for finding in blocking:
                   print(f"- {finding}")
               sys.exit(1)
 
-          print("High/Critical Semgrep bulgusu bulunmadı.")
+          print("Blocking Semgrep bulgusu bulunmadı.")
           PY
 
       - name: Upload Semgrep SARIF
